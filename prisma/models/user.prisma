@@ -1,0 +1,6 @@
+enum UserEnum {
+  USER
+  ADMIN
+  SUPER_ADMIN
+  HOST
+}
