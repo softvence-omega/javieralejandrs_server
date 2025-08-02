@@ -1,6 +1,24 @@
-enum UserEnum {
+enum userRole {
   USER
   ADMIN
   SUPER_ADMIN
   HOST
 }
+
+model User {
+  id         String       @unique @default(uuid())
+  userName   String?
+  email      String       @unique
+  password   String
+  role       userRole     @default(USER)
+  name       String?
+  images     String?
+  location   String?
+  bio        String?
+  phoneNo    String?
+  isPopular  Boolean? //use for author
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+}
+
+
