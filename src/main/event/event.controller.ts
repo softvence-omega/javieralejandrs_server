@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { CreateEventDto } from './dto/create-event.dto';
 import { CreateEventService } from './services/create-event.service';
 import { GetUser, ValidateHostORAuthor } from '@project/common/jwt/jwt.decorator';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 
 @ApiTags("----Event")
 @Controller('event')
@@ -11,10 +11,12 @@ export class EventController {
   constructor(private readonly createEventService: CreateEventService) {}
 
   @Post()
-  async create(@Body() createEventDto: CreateEventDto,@GetUser('hostId')hostId:string
+  @ApiConsumes('multipart/form-data')
+  
+  async create(@Body() createEventDto: CreateEventDto,@GetUser('userId')hostId:string
 
   ) {
-    return this.createEventService.createEvent(createEventDto,hostId);
+    return await this.createEventService.createEvent(createEventDto,hostId);
   }
 
   // @Get()
