@@ -11,7 +11,7 @@ model event {
     location          String
     price             Int
     hostId            String
-    // host              User  @relation(fields: [hostId],references: [id])
+    host              User  @relation(fields: [hostId],references: [id])
 
     createdAt         DateTime      @default(now())
     updateAt          DateTime      @updatedAt

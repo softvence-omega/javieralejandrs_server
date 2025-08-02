@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { EventType } from '@prisma/client';
 import { IsEnum, IsNotEmpty, IsString, IsArray, IsInt } from 'class-validator';
-import { EventType } from '@prisma/client'; // Adjust if your enum is in a different path
 
 export class CreateEventDto {
   @ApiProperty()
