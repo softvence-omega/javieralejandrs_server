@@ -1,0 +1,26 @@
+model event {
+    id      String @id @unique @default(uuid())
+    shortName   String
+    shortDescription  String
+    eventImage        String
+    shortOverview     String
+    overViewImage     String[]
+    tags              String[]
+    eventType         EventType
+    extraText         String[]
+    location          String
+    price             Int
+    hostId            String
+    // host              User  @relation(fields: [hostId],references: [id])
+
+    createdAt         DateTime      @default(now())
+    updateAt          DateTime      @updatedAt
+}
+
+
+enum EventType {
+    Birthday
+    Wedding
+    Party
+    Get_together
+}
