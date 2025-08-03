@@ -1,11 +1,14 @@
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import * as cookieParser from 'cookie-parser';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import 'reflect-metadata';
 import { AppModule } from './app.module';
 import { ENVEnum } from './common/enum/env.enum';
 import { AllExceptionsFilter } from './common/filter/http-exception.filter';
+import session from 'express-session';
+import passport from 'passport';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -29,6 +32,17 @@ async function bootstrap() {
 
   app.setGlobalPrefix('ts');
 
+  app.use(
+    session({
+      secret: configService.getOrThrow<string>(ENVEnum.JWT_SECRET),
+      resave: false,
+      saveUninitialized: false,
+      cookie: { maxAge: 60000 },
+    }),
+  )
+  app.use(passport.initialize());
+  app.use(passport.session());
+
   // ✅ Swagger config with Bearer Auth
   const config = new DocumentBuilder()
     .setTitle('Link Party')
@@ -40,6 +54,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('ts/docs', app, document);
 
+ app.use(cookieParser.default());
   const port = parseInt(configService.get<string>(ENVEnum.PORT) ?? '5000', 10);
   await app.listen(port);
 }

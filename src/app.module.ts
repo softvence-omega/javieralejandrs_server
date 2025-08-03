@@ -46,7 +46,7 @@ import { MainModule } from './main/main.module';
 
     NotificationModule,
 
-    PassportModule,
+    PassportModule.register({session: true}),
 
     JwtModule.registerAsync({
       imports: [ConfigModule],
