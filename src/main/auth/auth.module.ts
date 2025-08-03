@@ -4,20 +4,26 @@ import { AuthController } from './auth.controller';
 import { PrismaModule } from '../prisma/prisma.module';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { GoogleStrategy } from './strategies/google-auth.strategy';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { GoogleAuthGuard } from './guard/googl-oauth.guard';
+import { Serializer } from './strategies/serializer';
 
 @Module({
   imports: [
     PrismaModule,
-    PassportModule
-    , JwtModule.register(
-      {
-        secret: process.env.JWT_SECRET,
-        signOptions: { expiresIn: '24h' },
-      }
-    )
+    PassportModule,
+      JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '7d' },
+      }),
+    }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, GoogleAuthGuard, GoogleStrategy, Serializer],
   exports: [JwtModule]
 })
 export class AuthModule { }
