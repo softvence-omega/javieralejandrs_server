@@ -10,6 +10,8 @@ import * as crypto from 'crypto';
 import { LoginDto } from './dto/login.dto';
 import { GoogleLoginDetails } from './entities/googleLoginDetails';
 import admin from '@project/lib/firebase/firebase-admin';
+import { google, oauth2_v2 } from 'googleapis';
+import { Credentials } from 'google-auth-library';
 
 
 @Injectable()
@@ -18,6 +20,12 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly mailService: MailService
   ) { }
+
+     private oauth2Client = new google.auth.OAuth2(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    'https://developers.google.com/oauthplayground', // must match Playground
+  );
 
   async createUser(dto: CreateUserDto) {
     try {
@@ -118,6 +126,7 @@ export class AuthService {
     }
   }
 
+  
 
 async validateUser(details: GoogleLoginDetails ) {
   const user = await this.prisma.user.findFirst({
@@ -151,43 +160,82 @@ async findUser(userId: string) {
   return user;
 }
 
-// async googleLogin(profile: any): Promise<{ accessToken: string }> {
-//   try {
-//     console.log('🔍 googleLogin input profile:', profile);
+ getGoogleAuthURL(): string {
+    const scopes = [
+      'https://www.googleapis.com/auth/userinfo.email',
+      'https://www.googleapis.com/auth/userinfo.profile',
+      'openid',
+    ];
 
-//     const existingUser = await this.prisma.user.findFirst({
-//       where: { email: profile.email },
-//     });
+    return this.oauth2Client.generateAuthUrl({
+      access_type: 'offline',
+      prompt: 'consent',
+      scope: scopes,
+    });
+  }
 
-//     let user = existingUser;
+  async getGoogleUser(code: string): Promise<{
+  tokens: Credentials;
+  profile: oauth2_v2.Schema$Userinfo;
+}> {
+    const { tokens } = await this.oauth2Client.getToken(code);
+    this.oauth2Client.setCredentials(tokens);
 
-//     if (!existingUser) {
-//       user = await this.prisma.user.create({
-//         data: {
-//           name: profile.firstName + ' ' + profile.lastName,
-//           userName: profile.email.split('@')[0],
-//           email: profile.email,
-//           images: profile.picture,
-//           password: '',
-//           role: 'USER',
-//         },
-//       });
-//       console.log('Created new user:', user);
-//     }
+    const oauth2 = google.oauth2({ version: 'v2', auth: this.oauth2Client });
+    const { data } = await oauth2.userinfo.get();
 
-//    const payload = {
-//   sub: user?.id,
-//   email: user?.email,
-//   role: user?.role,
-// };
+    return {
+      tokens,
+      profile: data,
+    };
+  }
 
-//     const accessToken = await this.jwtService.signAsync(payload);
-//     return { accessToken };
-//   } catch (error) {
-//     console.error(' Error in googleLogin:', error);
-//     throw error;
-//   }
-// }
+ async exchangeCodeForTokens(code: string): Promise<{
+  tokens: Credentials;
+  profile: oauth2_v2.Schema$Userinfo;
+}> {
+    const { tokens } = await this.oauth2Client.getToken(code);
+    this.oauth2Client.setCredentials(tokens);
+
+    const oauth2 = google.oauth2({ version: 'v2', auth: this.oauth2Client });
+    const { data } = await oauth2.userinfo.get();
+
+    return {
+      tokens,
+      profile: data,
+    };
+  }
+
+async googleLogin(profile: any): Promise<{ accessToken: string }> {
+  try {
+    console.log('🔍 googleLogin input profile:', profile);
+
+    const existingUser = await this.prisma.user.findFirst({
+      where: { email: profile.email },
+    });
+
+    let user = existingUser;
+
+    if (!existingUser) {
+      user = await this.prisma.user.create({
+        data: profile,
+      });
+      console.log('Created new user:', user);
+    }
+
+   const payload = {
+  sub: user?.id,
+  email: user?.email,
+  role: user?.role,
+};
+
+    const accessToken = await this.jwtService.signAsync(payload);
+    return { accessToken };
+  } catch (error) {
+    console.error(' Error in googleLogin:', error);
+    throw error;
+  }
+}
 
   
   // async loginWithFirebase(idToken: string) {

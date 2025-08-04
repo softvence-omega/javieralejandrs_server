@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
@@ -10,6 +10,7 @@ import admin from '@project/lib/firebase/firebase-admin';
 // import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { FirebaseLoginDto } from './dto/firebase.dto';
 import { ForgotPasswordDto } from './dto/forget-password.dto';
+import { GoogleLoginDto } from './dto/google.login.dto';
 
 
 @Controller('auth')
@@ -35,42 +36,73 @@ export class AuthController {
   }
 
 
-  @Get('google')
-  @ApiOperation({ summary: 'Login with Google' })
-  @UseGuards(GoogleAuthGuard)
-  async googleAuth() {
-    // Redirects to Google
-  }
+ @Post('google/code')
+  async handleGoogleCode(@Body() code: GoogleLoginDto) {
+    const { tokens, profile } = await this.authService.exchangeCodeForTokens(code.code);
+    console.log(pro)
+  //     id         String       @unique @default(uuid())
+  // userName   String?
+  // email      String       @unique
+  // password   String
+  // role       userRole     @default(USER)
+  // name       String?
+  // images     String?
+  // location   String?
+  // bio        String?
+  // phoneNo    String?
+  // provider    String?   
+  // providerId  String?  
+  // resetToken  String?
+  // resetTokenExpiry DateTime? 
+  // isPopular  Boolean? //use for author
+  // createdAt  DateTime     @default(now())
+  // updatedAt  DateTime     @updatedAt
 
-  @Get('google/callback')
-  @UseGuards(GoogleAuthGuard)
-  async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
-
-    console.log(req.user, 'req.user');
-    // try {
-    //   console.log('googleAuthRedirect', req.user);
-    //   const token = await this.authService.googleLogin(req.user);
-    //   console.log('Token:', token);
-    //   return res.redirect(`${process.env.CLIENT_URL}?token=${token.accessToken}`);
-    // } catch (err) {
-    //   console.error('Google login error:', err);
-    //   return res.status(500).json({
-    //     success: false,
-    //     message: 'Internal server error',
-    //     data: null,
-    //   });
-    // }
-  }
-
-  @Get('status')
-  user(@Req() request: Request) {
-    console.log(request.user);
-    if (request.user) {
-      return { msg: 'Authenticated' };
-    } else {
-      return { msg: 'Not Authenticated' };
+    const user = {
+      userName: `@${(profile.name)?.toLowerCase()}`,
+      email:profile.email,
+      name:profile.name,
+      images: profile.picture,
+      role: "USER",
+      password:""
     }
+    // Optionally save user / issue JWT
+    // return {
+    //   user: profile,
+    //   tokens,
+    // };
+    return await this.authService.googleLogin(user)
   }
+
+  // @Get('google/callback')
+  // @UseGuards(GoogleAuthGuard)
+  // async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
+
+  //   console.log(req.user, 'req.user');
+  //   // try {
+  //   //   console.log('googleAuthRedirect', req.user);
+  //   //   const token = await this.authService.googleLogin(req.user);
+  //   //   console.log('Token:', token);
+  //   //   return res.redirect(`${process.env.CLIENT_URL}?token=${token.accessToken}`);
+  //   // } catch (err) {
+  //   //   console.error('Google login error:', err);
+  //   //   return res.status(500).json({
+  //   //     success: false,
+  //   //     message: 'Internal server error',
+  //   //     data: null,
+  //   //   });
+  //   // }
+  // }
+
+  // @Get('status')
+  // user(@Req() request: Request) {
+  //   console.log(request.user);
+  //   if (request.user) {
+  //     return { msg: 'Authenticated' };
+  //   } else {
+  //     return { msg: 'Not Authenticated' };
+  //   }
+  // }
 
   // @Post('firebase-login')
   // @ApiOperation({ summary: 'Login using Firebase Google ID token' })
