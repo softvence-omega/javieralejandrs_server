@@ -206,7 +206,7 @@ async findUser(userId: string) {
     };
   }
 
-async googleLogin(profile: any): Promise<{ accessToken: string }> {
+async googleLogin(profile: any): Promise<{ accessToken: string,user:any }> {
   try {
     console.log('🔍 googleLogin input profile:', profile);
 
@@ -214,7 +214,10 @@ async googleLogin(profile: any): Promise<{ accessToken: string }> {
       where: { email: profile.email },
     });
 
-    let user = existingUser;
+    if(existingUser){
+      throw new BadRequestException('User Already Exist!!!')
+    }
+    let user;
 
     if (!existingUser) {
       user = await this.prisma.user.create({
@@ -230,7 +233,7 @@ async googleLogin(profile: any): Promise<{ accessToken: string }> {
 };
 
     const accessToken = await this.jwtService.signAsync(payload);
-    return { accessToken };
+    return { accessToken,user };
   } catch (error) {
     console.error(' Error in googleLogin:', error);
     throw error;

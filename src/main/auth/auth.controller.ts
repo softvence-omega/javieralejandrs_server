@@ -39,7 +39,7 @@ export class AuthController {
  @Post('google/code')
   async handleGoogleCode(@Body() code: GoogleLoginDto) {
     const { tokens, profile } = await this.authService.exchangeCodeForTokens(code.code);
-    console.log(pro)
+    // console.log(pro)
   //     id         String       @unique @default(uuid())
   // userName   String?
   // email      String       @unique
@@ -61,11 +61,12 @@ export class AuthController {
     const user = {
       userName: `@${(profile.name)?.toLowerCase()}`,
       email:profile.email,
-      name:profile.name,
+      name:profile.name?.split(" ").join(""),
       images: profile.picture,
       role: "USER",
       password:""
     }
+    console.log(user)
     // Optionally save user / issue JWT
     // return {
     //   user: profile,
