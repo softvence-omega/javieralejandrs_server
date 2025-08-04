@@ -39,7 +39,7 @@ async function bootstrap() {
       saveUninitialized: false,
       cookie: { maxAge: 60000 },
     }),
-  )
+  );
   app.use(passport.initialize());
   app.use(passport.session());
 
@@ -54,7 +54,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('ts/docs', app, document);
 
- app.use(cookieParser.default());
+  app.use(cookieParser.default());
   const port = parseInt(configService.get<string>(ENVEnum.PORT) ?? '5000', 10);
   await app.listen(port);
 }

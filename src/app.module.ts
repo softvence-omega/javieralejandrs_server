@@ -13,6 +13,7 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { LibModule } from './lib/lib.module';
 import { NotificationModule } from './lib/notification/notification.module';
 import { MainModule } from './main/main.module';
+import { BlogController } from './blog/blog.controller';
 
 @Module({
   imports: [
@@ -46,7 +47,7 @@ import { MainModule } from './main/main.module';
 
     NotificationModule,
 
-    PassportModule.register({session: true}),
+    PassportModule.register({ session: true }),
 
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -63,7 +64,7 @@ import { MainModule } from './main/main.module';
 
     LibModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, BlogController],
   providers: [JwtStrategy],
 })
 export class AppModule implements NestModule {

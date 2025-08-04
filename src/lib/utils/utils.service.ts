@@ -52,5 +52,4 @@ export class UtilsService {
   }
 
   // * DB UTILS
-  
 }
