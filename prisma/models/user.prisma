@@ -16,8 +16,10 @@ model User {
   location   String?
   bio        String?
   phoneNo    String?
-  provider    String?   // 'google', 'local', etc.
-  providerId  String?   
+  provider    String?   
+  providerId  String?  
+  resetToken  String?
+  resetTokenExpiry DateTime? 
   isPopular  Boolean? //use for author
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt

@@ -16,6 +16,10 @@ CREATE TABLE "public"."User" (
     "location" TEXT,
     "bio" TEXT,
     "phoneNo" TEXT,
+    "provider" TEXT,
+    "providerId" TEXT,
+    "resetToken" TEXT,
+    "resetTokenExpiry" TIMESTAMP(3),
     "isPopular" BOOLEAN,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL

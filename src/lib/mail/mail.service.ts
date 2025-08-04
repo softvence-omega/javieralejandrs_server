@@ -22,6 +22,7 @@ export class MailService {
     email: string,
     code: string,
   ): Promise<nodemailer.SentMessageInfo> {
+    console.log(email)
     const mailOptions = {
       from: `"No Reply" <${this.configService.get<string>(ENVEnum.MAIL_USER)}>`,
       to: email,
@@ -51,3 +52,28 @@ export class MailService {
     return this.transporter.sendMail(mailOptions);
   }
 }
+
+
+
+// import { Injectable } from '@nestjs/common';
+// import * as nodemailer from 'nodemailer';
+
+// @Injectable()
+// export class MailService {
+//   private transporter = nodemailer.createTransport({
+//     service: 'gmail',
+//     auth: {
+//       user: process.env.MAIL_USER,
+//       pass: process.env.MAIL_PASS,
+//     },
+//   });
+
+//   async sendMail({ to, subject, html }: { to: string; subject: string; html: string }) {
+//     await this.transporter.sendMail({
+//       from: '"Link & Party" <no-reply@linkparty.com>',
+//       to,
+//       subject,
+//       html,
+//     });
+//   }
+// }
