@@ -39,24 +39,6 @@ export class AuthController {
  @Post('google/code')
   async handleGoogleCode(@Body() code: GoogleLoginDto) {
     const { tokens, profile } = await this.authService.exchangeCodeForTokens(code.code);
-    // console.log(pro)
-  //     id         String       @unique @default(uuid())
-  // userName   String?
-  // email      String       @unique
-  // password   String
-  // role       userRole     @default(USER)
-  // name       String?
-  // images     String?
-  // location   String?
-  // bio        String?
-  // phoneNo    String?
-  // provider    String?   
-  // providerId  String?  
-  // resetToken  String?
-  // resetTokenExpiry DateTime? 
-  // isPopular  Boolean? //use for author
-  // createdAt  DateTime     @default(now())
-  // updatedAt  DateTime     @updatedAt
 
     const user = {
       userName: `@${(profile.name)?.toLowerCase()}`,
@@ -66,56 +48,7 @@ export class AuthController {
       role: "USER",
       password:""
     }
-    console.log(user)
-    // Optionally save user / issue JWT
-    // return {
-    //   user: profile,
-    //   tokens,
-    // };
     return await this.authService.googleLogin(user)
   }
 
-  // @Get('google/callback')
-  // @UseGuards(GoogleAuthGuard)
-  // async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
-
-  //   console.log(req.user, 'req.user');
-  //   // try {
-  //   //   console.log('googleAuthRedirect', req.user);
-  //   //   const token = await this.authService.googleLogin(req.user);
-  //   //   console.log('Token:', token);
-  //   //   return res.redirect(`${process.env.CLIENT_URL}?token=${token.accessToken}`);
-  //   // } catch (err) {
-  //   //   console.error('Google login error:', err);
-  //   //   return res.status(500).json({
-  //   //     success: false,
-  //   //     message: 'Internal server error',
-  //   //     data: null,
-  //   //   });
-  //   // }
-  // }
-
-  // @Get('status')
-  // user(@Req() request: Request) {
-  //   console.log(request.user);
-  //   if (request.user) {
-  //     return { msg: 'Authenticated' };
-  //   } else {
-  //     return { msg: 'Not Authenticated' };
-  //   }
-  // }
-
-  // @Post('firebase-login')
-  // @ApiOperation({ summary: 'Login using Firebase Google ID token' })
-  // @ApiBody({ type: FirebaseLoginDto })
-  // @ApiResponse({ status: 201, description: 'User authenticated and JWT returned' })
-  // async firebaseLogin(@Body() body: FirebaseLoginDto) {
-  //   return await this.authService.loginWithFirebase(body.idToken);
-  // }
-
-  // @Get('google-test')
-  // @ApiOperation({ summary: 'Manual Google login test (Swagger)' })
-  // async testRedirect(@Res() res: Response) {
-  //   return res.redirect('http://localhost:5003/ts/auth/google');
-  // }
 }
