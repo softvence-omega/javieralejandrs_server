@@ -1,0 +1,2 @@
+-- AddForeignKey
+ALTER TABLE "event" ADD CONSTRAINT "event_hostId_fkey" FOREIGN KEY ("hostId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

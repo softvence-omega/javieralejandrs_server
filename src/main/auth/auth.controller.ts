@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { Request, Response } from 'express';
+<<<<<<< HEAD
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { GoogleAuthGuard } from './guard/googl-oauth.guard';
 import { PrismaService } from '../prisma/prisma.service';
@@ -11,7 +12,12 @@ import admin from '@project/lib/firebase/firebase-admin';
 import { FirebaseLoginDto } from './dto/firebase.dto';
 import { ForgotPasswordDto } from './dto/forget-password.dto';
 
+=======
+import { ApiTags } from '@nestjs/swagger';
+>>>>>>> 9f611a5602c58f25aba75d37ee434c93a99581ae
 
+
+@ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService, private readonly prisma: PrismaService) { }
