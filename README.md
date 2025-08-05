@@ -21,7 +21,6 @@ docker run --name local-postgres \
 
 ```bash
 docker run --name local-redis \
-  -p 6382:6379 \
   -d redis
 ```
 
