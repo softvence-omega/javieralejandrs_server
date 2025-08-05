@@ -1,11 +1,12 @@
+import { MailService } from './../../lib/mail/mail.service';
 import { JwtService } from '@nestjs/jwt';
 
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import bcrypt from "bcrypt";
-import { access } from 'fs';
+import * as crypto from 'crypto';
 import { LoginDto } from './dto/login.dto';
 import { GoogleLoginDetails } from './entities/googleLoginDetails';
 import admin from '@project/lib/firebase/firebase-admin';
@@ -14,7 +15,9 @@ import admin from '@project/lib/firebase/firebase-admin';
 @Injectable()
 export class AuthService {
   constructor(private readonly prisma: PrismaService,
-    private readonly jwtService: JwtService) { }
+    private readonly jwtService: JwtService,
+    private readonly mailService: MailService
+  ) { }
 
   async createUser(dto: CreateUserDto) {
     try {
@@ -77,6 +80,43 @@ export class AuthService {
 
   }
 
+
+ async forgotPassword(email: string) {
+    try {
+      const user = await this.prisma.user.findUnique({ where: { email } });
+      if (!user) throw new NotFoundException('User not found');
+
+      const token = crypto.randomBytes(32).toString('hex');
+      const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+      const expiry = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
+
+      await this.prisma.user.update({
+        where: { email },
+        data: {
+          resetToken: hashedToken,
+          resetTokenExpiry: expiry,
+        },
+      });
+
+      const resetLink = `https://your-frontend.com/reset-password/${token}`;
+
+      await this.mailService.sendEmail(
+        user.email,
+        'Reset Your Password',
+        `
+          <h2>Password Reset Request</h2>
+          <p>Hello ${user.name ?? 'user'},</p>
+          <p>Click the link below to reset your password. This link will expire in 1 hour.</p>
+          <a href="${resetLink}">${resetLink}</a>
+        `,
+      );
+
+      return { message: 'Password reset link sent to your email' };
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      throw new InternalServerErrorException('Something went wrong');
+    }
+  }
 
 
 async validateUser(details: GoogleLoginDetails ) {
