@@ -97,7 +97,6 @@ export class EventController {
   @ApiQuery({ name: 'search', required: false, description: 'Search by keyword (eg vegan, birthday, taco)' })
   @ApiQuery({ name: 'minPrice', required: false })
   @ApiQuery({ name: 'maxPrice', required: false })
-  @ApiQuery({ name: 'sort', required: false })
   async findAllEvents(
     @Query() query: FilterEventDto
   ) {
