@@ -1,11 +1,17 @@
 import { MailService } from './../../lib/mail/mail.service';
 import { JwtService } from '@nestjs/jwt';
 
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import bcrypt from "bcrypt";
+import bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { LoginDto } from './dto/login.dto';
 import { GoogleLoginDetails } from './entities/googleLoginDetails';
@@ -13,15 +19,15 @@ import admin from '@project/lib/firebase/firebase-admin';
 import { google, oauth2_v2 } from 'googleapis';
 import { Credentials } from 'google-auth-library';
 
-
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: PrismaService,
+  constructor(
+    private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
-    private readonly mailService: MailService
-  ) { }
+    private readonly mailService: MailService,
+  ) {}
 
-     private oauth2Client = new google.auth.OAuth2(
+  private oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
     'https://developers.google.com/oauthplayground', // must match Playground
@@ -31,8 +37,8 @@ export class AuthService {
     try {
       const isUserExist = await this.prisma.user.findFirst({
         where: {
-          email: dto.email
-        }
+          email: dto.email,
+        },
       });
       if (isUserExist) {
         throw new BadRequestException('User already exist');
@@ -43,27 +49,24 @@ export class AuthService {
         data: {
           email: dto.email,
           password: hashedPassword,
-        }
+        },
       });
       // console.log("credential", result);
-      return { message: "User created successfully", result };
+      return { message: 'User created successfully', result };
     } catch (err) {
       // console.log(err);
-      return { message: "User creation failed", err };
+      return { message: 'User creation failed', err };
     }
-
   }
 
   async login(dto: LoginDto) {
-
     try {
       const user = await this.prisma.user.findFirst({
         where: {
-          email: dto.email
-        }
+          email: dto.email,
+        },
       });
-      if (
-        !user) {
+      if (!user) {
         throw new BadRequestException('User does not exist, create user first');
       }
 
@@ -75,27 +78,28 @@ export class AuthService {
       const payload = {
         sub: user.id,
         email: user.email,
-        roles: user.role
+        roles: user.role,
       };
 
       const token = await this.jwtService.signAsync(payload);
 
-      return { message: "User login successfully", access_token: token };
+      return { message: 'User login successfully', access_token: token };
     } catch (err) {
       // console.log(err);
-      return { message: "User login failed", err };
+      return { message: 'User login failed', err };
     }
-
   }
 
-
- async forgotPassword(email: string) {
+  async forgotPassword(email: string) {
     try {
       const user = await this.prisma.user.findUnique({ where: { email } });
       if (!user) throw new NotFoundException('User not found');
 
       const token = crypto.randomBytes(32).toString('hex');
-      const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+      const hashedToken = crypto
+        .createHash('sha256')
+        .update(token)
+        .digest('hex');
       const expiry = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
 
       await this.prisma.user.update({
@@ -126,41 +130,39 @@ export class AuthService {
     }
   }
 
-  
-
-async validateUser(details: GoogleLoginDetails ) {
-  const user = await this.prisma.user.findFirst({
-    where: {
-      email: details.email,
-    },
-  })
-  if(user){
-    return user
+  async validateUser(details: GoogleLoginDetails) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        email: details.email,
+      },
+    });
+    if (user) {
+      return user;
+    }
+    const newUser = await this.prisma.user.create({
+      data: {
+        name: details.name,
+        userName: details.email.split('@')[0],
+        email: details.email,
+        images: details.picture,
+        password: '', // No password from Google
+        role: 'USER',
+      },
+    });
+    console.log(newUser);
+    return newUser;
   }
- const newUser = await this.prisma.user.create({
-    data: {
-      name: details.name,
-      userName: details.email.split('@')[0],
-      email: details.email,
-      images: details.picture,
-      password: '', // No password from Google
-      role: 'USER',
-    },
-  });
-  console.log(newUser)
-  return newUser
-}
 
-async findUser(userId: string) {
-  const user = await this.prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-  });
-  return user;
-}
+  async findUser(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+    return user;
+  }
 
- getGoogleAuthURL(): string {
+  getGoogleAuthURL(): string {
     const scopes = [
       'https://www.googleapis.com/auth/userinfo.email',
       'https://www.googleapis.com/auth/userinfo.profile',
@@ -175,9 +177,9 @@ async findUser(userId: string) {
   }
 
   async getGoogleUser(code: string): Promise<{
-  tokens: Credentials;
-  profile: oauth2_v2.Schema$Userinfo;
-}> {
+    tokens: Credentials;
+    profile: oauth2_v2.Schema$Userinfo;
+  }> {
     const { tokens } = await this.oauth2Client.getToken(code);
     this.oauth2Client.setCredentials(tokens);
 
@@ -190,10 +192,10 @@ async findUser(userId: string) {
     };
   }
 
- async exchangeCodeForTokens(code: string): Promise<{
-  tokens: Credentials;
-  profile: oauth2_v2.Schema$Userinfo;
-}> {
+  async exchangeCodeForTokens(code: string): Promise<{
+    tokens: Credentials;
+    profile: oauth2_v2.Schema$Userinfo;
+  }> {
     const { tokens } = await this.oauth2Client.getToken(code);
     this.oauth2Client.setCredentials(tokens);
 
@@ -206,41 +208,40 @@ async findUser(userId: string) {
     };
   }
 
-async googleLogin(profile: any): Promise<{ accessToken: string,user:any }> {
-  try {
-    console.log('🔍 googleLogin input profile:', profile);
+  async googleLogin(profile: any): Promise<{ accessToken: string; user: any }> {
+    try {
+      console.log('🔍 googleLogin input profile:', profile);
 
-    const existingUser = await this.prisma.user.findFirst({
-      where: { email: profile.email },
-    });
-
-    if(existingUser){
-      throw new BadRequestException('User Already Exist!!!')
-    }
-    let user;
-
-    if (!existingUser) {
-      user = await this.prisma.user.create({
-        data: profile,
+      const existingUser = await this.prisma.user.findFirst({
+        where: { email: profile.email },
       });
-      console.log('Created new user:', user);
+
+      if (existingUser) {
+        throw new BadRequestException('User Already Exist!!!');
+      }
+      let user;
+
+      if (!existingUser) {
+        user = await this.prisma.user.create({
+          data: profile,
+        });
+        console.log('Created new user:', user);
+      }
+
+      const payload = {
+        sub: user?.id,
+        email: user?.email,
+        role: user?.role,
+      };
+
+      const accessToken = await this.jwtService.signAsync(payload);
+      return { accessToken, user };
+    } catch (error) {
+      console.error(' Error in googleLogin:', error);
+      throw error;
     }
-
-   const payload = {
-  sub: user?.id,
-  email: user?.email,
-  role: user?.role,
-};
-
-    const accessToken = await this.jwtService.signAsync(payload);
-    return { accessToken,user };
-  } catch (error) {
-    console.error(' Error in googleLogin:', error);
-    throw error;
   }
-}
 
-  
   // async loginWithFirebase(idToken: string) {
   //   let decoded;
   //   try {
@@ -284,5 +285,4 @@ async googleLogin(profile: any): Promise<{ accessToken: string,user:any }> {
   //     user,
   //   };
   // }
-
 }

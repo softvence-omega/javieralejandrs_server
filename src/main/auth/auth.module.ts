@@ -13,7 +13,7 @@ import { Serializer } from './strategies/serializer';
   imports: [
     PrismaModule,
     PassportModule,
-      JwtModule.registerAsync({
+    JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
@@ -24,6 +24,6 @@ import { Serializer } from './strategies/serializer';
   ],
   controllers: [AuthController],
   providers: [AuthService, GoogleAuthGuard, Serializer],
-  exports: [JwtModule]
+  exports: [JwtModule],
 })
-export class AuthModule { }
+export class AuthModule {}
