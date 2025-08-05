@@ -9,6 +9,6 @@ model Plan {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // Relations
-  users       User[]
+
+  User          User[] @relation( name: "UserPlan" )
 }

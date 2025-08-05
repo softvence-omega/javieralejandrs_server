@@ -29,6 +29,11 @@ model User {
   likes      Like[]
   comments   Comment[]
   views      View[]
+
+  planId   String?  
+  plan Plan? @relation(name: "UserPlan",fields: [planId], references: [id])
+
+  Brand Brand?
 }
 
 

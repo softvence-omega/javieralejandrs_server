@@ -37,6 +37,7 @@ model Like {
 
 model Comment {
   id        String   @id @default(uuid())
+  content   String
   userId    String
   blogId    String
   createdAt DateTime @default(now())

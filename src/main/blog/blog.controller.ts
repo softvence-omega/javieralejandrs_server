@@ -1,3 +1,4 @@
+import { User } from './../../../node_modules/.prisma/client/index.d';
 import {
   Body,
   Controller,
@@ -15,7 +16,14 @@ import { JwtAuthGuard } from '@project/common/jwt/jwt.guard';
 import { Request } from 'express';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
+import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
+import {
+  GetUser,
+  ValidateAuth,
+  ValidateHost,
+} from '@project/common/jwt/jwt.decorator';
+import { UserEnum } from '@project/common/enum/user.enum';
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -31,21 +39,12 @@ export class BlogController {
   constructor(private readonly blogService: BlogService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create a new blog post' })
-  @ApiResponse({
-    status: 201,
-    description: 'Blog post created successfully',
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized - JWT token required',
-  })
   async createBlog(
     @Body() createBlogDto: CreateBlogDto,
-    @Req() req: AuthenticatedRequest,
+    @GetUser('userId') userId: string,
   ) {
-    return this.blogService.createBlog(createBlogDto, req.user.id);
+    return await this.blogService.createBlog(createBlogDto, userId);
   }
 
   @Get()
@@ -106,6 +105,68 @@ export class BlogController {
     const pageNum = page ? parseInt(page, 10) : 1;
     const limitNum = limit ? parseInt(limit, 10) : 10;
     return this.blogService.getUserBlogs(req.user.id, pageNum, limitNum);
+  }
+
+  @Get('search')
+  @ApiOperation({ summary: 'Search blog posts' })
+  @ApiQuery({
+    name: 'q',
+    required: true,
+    type: String,
+    description: 'Search term',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number (default: 1)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Number of items per page (default: 10)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Search results retrieved successfully',
+  })
+  async searchBlogs(
+    @Query('q') searchTerm: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const pageNum = page ? parseInt(page, 10) : 1;
+    const limitNum = limit ? parseInt(limit, 10) : 10;
+    return this.blogService.searchBlogs(searchTerm, pageNum, limitNum);
+  }
+
+  @Get('theme/:theme')
+  @ApiOperation({ summary: 'Get blog posts by theme' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number (default: 1)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Number of items per page (default: 10)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Blogs by theme retrieved successfully',
+  })
+  async getBlogsByTheme(
+    @Param('theme') theme: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const pageNum = page ? parseInt(page, 10) : 1;
+    const limitNum = limit ? parseInt(limit, 10) : 10;
+    return this.blogService.getBlogsByTheme(theme, pageNum, limitNum);
   }
 
   @Get(':id')
@@ -186,5 +247,82 @@ export class BlogController {
   })
   async likeBlog(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
     return this.blogService.likeBlog(id, req.user.id);
+  }
+
+  @Post(':id/comment')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Add a comment to a blog post' })
+  @ApiResponse({
+    status: 201,
+    description: 'Comment added successfully',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - JWT token required',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Blog post not found',
+  })
+  async addComment(
+    @Param('id') blogId: string,
+    @Body() createCommentDto: CreateCommentDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.blogService.addComment(blogId, req.user.id, createCommentDto);
+  }
+
+  @Get(':id/comments')
+  @ApiOperation({ summary: 'Get comments for a blog post' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number (default: 1)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Number of items per page (default: 10)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Comments retrieved successfully',
+  })
+  async getBlogComments(
+    @Param('id') blogId: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const pageNum = page ? parseInt(page, 10) : 1;
+    const limitNum = limit ? parseInt(limit, 10) : 10;
+    return this.blogService.getBlogComments(blogId, pageNum, limitNum);
+  }
+
+  @Delete('comment/:commentId')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Delete a comment' })
+  @ApiResponse({
+    status: 200,
+    description: 'Comment deleted successfully',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - JWT token required',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - You can only delete your own comments',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Comment not found',
+  })
+  async deleteComment(
+    @Param('commentId') commentId: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.blogService.deleteComment(commentId, req.user.id);
   }
 }
