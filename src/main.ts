@@ -23,7 +23,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      // forbidNonWhitelisted: true,
+      forbidNonWhitelisted: true,
       transform: true,
     }),
   );
@@ -48,13 +48,38 @@ async function bootstrap() {
     .setTitle('Link Party')
     .setDescription('Link Party API description')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        in: 'bearer',
+      },
+      'access-token',
+    )
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('ts/docs', app, document);
+  const documentFactory = SwaggerModule.createDocument(app, config);
 
- app.use(cookieParser.default());
+  documentFactory.paths = Object.fromEntries(
+    Object.entries(documentFactory.paths).map(([path, ops]) => [
+      path,
+      Object.fromEntries(
+        Object.entries(ops).map(([method, op]) => [
+          method,
+          {
+            ...op,
+            security: [{ 'access-token': [] }],
+          },
+        ]),
+      ),
+    ]),
+  );
+
+  // const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('ts/docs', app, documentFactory);
+
+  app.use(cookieParser.default());
   const port = parseInt(configService.get<string>(ENVEnum.PORT) ?? '5000', 10);
   await app.listen(port);
 }
