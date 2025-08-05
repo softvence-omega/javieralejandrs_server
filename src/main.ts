@@ -39,7 +39,7 @@ async function bootstrap() {
       saveUninitialized: false,
       cookie: { maxAge: 60000 },
     }),
-  )
+  );
   app.use(passport.initialize());
   app.use(passport.session());
 

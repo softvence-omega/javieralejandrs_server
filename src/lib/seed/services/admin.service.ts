@@ -37,24 +37,24 @@ export class AdminService implements OnModuleInit {
 
     // * create admin
     // if (!adminExists) {
-      // const user = await this.prisma.user.create({
-      //   data: {
-      //     email: adminEmail,
-      //     employeeID: Number(adminEmployeeID),
-      //     phone: adminPhone,
-      //     password: await this.utils.hash(adminPass),
-      //     isLogin: true,
-      //     isVerified: true,
-      //     lastLoginAt: new Date(),
-      //     role: 'ADMIN',
-      //   },
-      // });
-      // console.info(
-      //   chalk.bgGreen.white.bold(
-      //     `🚀 Admin user created with email: ${adminEmail} and id ${user.id}`,
-      //   ),
-      // );
-      // return;
+    // const user = await this.prisma.user.create({
+    //   data: {
+    //     email: adminEmail,
+    //     employeeID: Number(adminEmployeeID),
+    //     phone: adminPhone,
+    //     password: await this.utils.hash(adminPass),
+    //     isLogin: true,
+    //     isVerified: true,
+    //     lastLoginAt: new Date(),
+    //     role: 'ADMIN',
+    //   },
+    // });
+    // console.info(
+    //   chalk.bgGreen.white.bold(
+    //     `🚀 Admin user created with email: ${adminEmail} and id ${user.id}`,
+    //   ),
+    // );
+    // return;
     // }
 
     // * update login

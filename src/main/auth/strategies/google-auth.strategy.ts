@@ -1,4 +1,3 @@
-
 // import { AuthService } from './../auth.service';
 // import { PassportStrategy } from '@nestjs/passport';
 // import { Injectable } from '@nestjs/common';
@@ -20,12 +19,12 @@
 //   }
 
 //   async validate(
-//     accessToken: string, 
-//     refreshToken: string, 
-//     profile: Profile, 
+//     accessToken: string,
+//     refreshToken: string,
+//     profile: Profile,
 //     // done: VerifyCallback
 //   ): Promise<any> {
-  
+
 //     console.log(profile)
 
 //     const user = await this.authService.validateUser({
@@ -35,11 +34,11 @@
 //       displayName: profile.displayName,
 //       picture: profile.photos?.[0].value?? '',
 //       provider: 'google',
-      
+
 //     })
 // console.log(user)
 //     return user || null
-    
+
 //     // const { name, emails, photos } = profile;
 //     // const user = {
 //     //   email: emails?.[0].value,

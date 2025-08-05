@@ -20,7 +20,11 @@ export class CreateEventDto {
   @IsString()
   shortOverview: string;
 
-  @ApiProperty({ type: 'array', items: { type: 'string', format: 'binary' }, required: false })
+  @ApiProperty({
+    type: 'array',
+    items: { type: 'string', format: 'binary' },
+    required: false,
+  })
   @IsOptional()
   overViewImage?: any[];
 
@@ -34,12 +38,16 @@ export class CreateEventDto {
 
   @ApiProperty()
   @IsArray()
-  @Transform(({ value }) => typeof value === 'string' ? value.split(',') : value)
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.split(',') : value,
+  )
   tags: string[];
 
   @ApiProperty()
   @IsArray()
-  @Transform(({ value }) => typeof value === 'string' ? value.split(',') : value)
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.split(',') : value,
+  )
   extraText: string[];
 
   @ApiProperty()

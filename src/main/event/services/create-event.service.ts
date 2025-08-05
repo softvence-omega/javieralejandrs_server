@@ -8,7 +8,7 @@ import { FilterEventDto } from '../dto/filter-event.dto';
 
 @Injectable()
 export class CreateEventService {
-    constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
     
     async createEvent(
