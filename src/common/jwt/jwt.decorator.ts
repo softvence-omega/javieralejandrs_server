@@ -38,5 +38,5 @@ export function ValidateAdmin() {
 }
 
 export function ValidateHostORAuthor() {
-  return ValidateAuth(UserEnum.HOST, UserEnum.SUPER_ADMIN,UserEnum.AUTHOR);
+  return ValidateAuth(UserEnum.HOST, UserEnum.SUPER_ADMIN, UserEnum.AUTHOR);
 }
