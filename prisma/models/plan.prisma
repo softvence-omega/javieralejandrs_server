@@ -1,0 +1,14 @@
+model Plan {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  price       Float
+  duration    Int      // Duration in days
+  features    String[] // Array of features
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  users       User[]
+}
