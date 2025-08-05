@@ -1,40 +1,149 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UploadedFiles,
+  UseInterceptors,
+} from '@nestjs/common';
+import {
+  FileFieldsInterceptor,
+} from '@nestjs/platform-express';
+import {
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
+import {
+  GetUser,
+  ValidateHostORAuthor,
+} from '@project/common/jwt/jwt.decorator';
+import { CloudinaryService } from '@project/lib/cloudinary/cloudinary.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { CreateEventService } from './services/create-event.service';
-import { GetUser, ValidateHostORAuthor } from '@project/common/jwt/jwt.decorator';
-import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { UpdateEventDto } from './dto/update-event.dto';
 
-@ApiTags("----Event")
+@ApiTags('----Event')
 @Controller('event')
-@ValidateHostORAuthor()
+// @ValidateHostORAuthor()
 export class EventController {
-  constructor(private readonly createEventService: CreateEventService) {}
+  constructor(
+    private readonly createEventService: CreateEventService,
+    private readonly cloudinaryService: CloudinaryService,
+  ) { }
 
-  @Post()
+  @ValidateHostORAuthor()
+  @Post('create-event')
+  @ApiOperation({
+    summary: 'Create event by host or author',
+  })
   @ApiConsumes('multipart/form-data')
-  
-  async create(@Body() createEventDto: CreateEventDto,@GetUser('userId')hostId:string
-
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'eventImage', maxCount: 1 },
+      { name: 'overViewImage', maxCount: 10 },
+    ]),
+  )
+  async createEvent(
+    @Body() createEventDto: CreateEventDto,
+    @GetUser('userId') hostId: string,
+    @UploadedFiles()
+    files: {
+      eventImage?: Express.Multer.File[];
+      overViewImage?: Express.Multer.File[];
+    },
   ) {
-    return await this.createEventService.createEvent(createEventDto,hostId);
+    const eventImage = files?.eventImage?.[0];
+    const overViewImages = files?.overViewImage || [];
+
+    let eventImageUrl = '';
+    const overViewImageUrls: string[] = [];
+
+    if (eventImage) {
+      const uploaded = await this.cloudinaryService.uploadImageFromBuffer(
+        eventImage.buffer,
+        eventImage.originalname,
+      );
+      eventImageUrl = uploaded.url;
+    }
+
+    for (const image of overViewImages) {
+      const uploaded = await this.cloudinaryService.uploadImageFromBuffer(
+        image.buffer,
+        image.originalname,
+      );
+      overViewImageUrls.push(uploaded.url);
+    }
+
+    return this.createEventService.createEvent(
+      createEventDto,
+      hostId,
+      eventImageUrl,
+      overViewImageUrls,
+    );
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.eventService.findAll();
-  // }
+  @Get()
+  async findAllEvents() {
+    return await this.createEventService.findAllEvents();
+  }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.eventService.findOne(+id);
-  // }
+  @Get(':id')
+  async findEventById(@Param('id') id: string) {
+    return await this.createEventService.findEventById(id);
+  }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto) {
-  //   return this.eventService.update(+id, updateEventDto);
-  // }
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.eventService.remove(+id);
-  // }
+
+
+  @ValidateHostORAuthor()
+  @Post(':id/update-event')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'eventImage', maxCount: 1 },
+      { name: 'overViewImage', maxCount: 10 },
+    ]),
+  )
+  async updateEvent(
+    @Param('id') id: string,
+    @Body() updateEventDto: UpdateEventDto,
+    @UploadedFiles()
+    files: {
+      eventImage?: Express.Multer.File[];
+      overViewImage?: Express.Multer.File[];
+    },
+  ) {
+    // Event Image Upload
+    const eventImage = files?.eventImage?.[0];
+    const overViewImages = files?.overViewImage || [];
+
+    let eventImageUrl = '';
+    const overViewImageUrls: string[] = [];
+
+    if (eventImage) {
+      const uploaded = await this.cloudinaryService.uploadImageFromBuffer(
+        eventImage.buffer,
+        eventImage.originalname,
+      );
+      eventImageUrl = uploaded.url;
+    }
+
+    for (const image of overViewImages) {
+      const uploaded = await this.cloudinaryService.uploadImageFromBuffer(
+        image.buffer,
+        image.originalname,
+      );
+      overViewImageUrls.push(uploaded.url);
+    }
+
+    return await this.createEventService.updateEvent(id, updateEventDto, eventImageUrl, overViewImageUrls);
+  }
+
+  @Delete(':id')
+  async deleteEvent(@Param('id') id: string) {
+    return await this.createEventService.deleteEvent(id);
+  }
+
 }

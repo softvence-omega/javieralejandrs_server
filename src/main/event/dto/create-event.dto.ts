@@ -1,6 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { EventType } from '@prisma/client';
-import { IsEnum, IsNotEmpty, IsString, IsArray, IsInt } from 'class-validator';
+import { ApiProperty } from "@nestjs/swagger";
+import { EventType } from "@prisma/client";
+import { Transform } from "class-transformer";
+import { IsArray, IsEnum, IsInt, IsOptional, IsString } from "class-validator";
 
 export class CreateEventDto {
   @ApiProperty()
@@ -11,37 +12,38 @@ export class CreateEventDto {
   @IsString()
   shortDescription: string;
 
-  @ApiProperty({ type: 'string', format: 'binary' })
-  eventImage: any;
+  @ApiProperty({ type: 'string', format: 'binary', required: false })
+  @IsOptional()
+  eventImage?: any;
 
   @ApiProperty()
   @IsString()
   shortOverview: string;
 
-  @ApiProperty({ type: 'array', items: { type: 'string', format: 'binary' } })
-  overViewImage: any[];
-
-  @ApiProperty({ type: [String] })
-  @IsArray()
-  tags: string[];
-
-  @ApiProperty({ enum: EventType })
-  @IsEnum(EventType)
-  eventType: EventType;
-
-  @ApiProperty({ type: [String] })
-  @IsArray()
-  extraText: string[];
+  @ApiProperty({ type: 'array', items: { type: 'string', format: 'binary' }, required: false })
+  @IsOptional()
+  overViewImage?: any[];
 
   @ApiProperty()
   @IsString()
   location: string;
 
-  @ApiProperty()
-  @IsInt()
-  price: number;
+  @ApiProperty({ enum: EventType })
+  @IsEnum(EventType)
+  eventType: EventType;
 
   @ApiProperty()
-  @IsString()
-  hostId: string;
+  @IsArray()
+  @Transform(({ value }) => typeof value === 'string' ? value.split(',') : value)
+  tags: string[];
+
+  @ApiProperty()
+  @IsArray()
+  @Transform(({ value }) => typeof value === 'string' ? value.split(',') : value)
+  extraText: string[];
+
+  @ApiProperty()
+  @IsInt()
+  @Transform(({ value }) => parseInt(value, 10))
+  price: number;
 }
