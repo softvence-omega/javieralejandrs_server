@@ -1,7 +1,7 @@
 import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { CreateEventDto } from './create-event.dto';
 import { EventType } from '@prisma/client';
-import { IsArray, IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class UpdateEventDto extends PartialType(CreateEventDto) {
@@ -55,4 +55,12 @@ export class UpdateEventDto extends PartialType(CreateEventDto) {
   @IsInt()
   @Transform(({ value }) => parseInt(value, 10))
   price?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(5)
+  @Transform(({ value }) => parseInt(value, 10))
+  rating?: number;
 }

@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
@@ -14,6 +15,7 @@ import {
 import {
   ApiConsumes,
   ApiOperation,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import {
@@ -24,6 +26,8 @@ import { CloudinaryService } from '@project/lib/cloudinary/cloudinary.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { CreateEventService } from './services/create-event.service';
 import { UpdateEventDto } from './dto/update-event.dto';
+import { EventType } from '@prisma/client';
+import { FilterEventDto } from './dto/filter-event.dto';
 
 @ApiTags('----Event')
 @Controller('event')
@@ -85,10 +89,22 @@ export class EventController {
     );
   }
 
+
   @Get()
-  async findAllEvents() {
-    return await this.createEventService.findAllEvents();
+  @ApiQuery({ name: 'eventType', enum: EventType, required: false })
+  @ApiQuery({ name: 'location', required: false, description: 'Search by location' })
+  @ApiQuery({ name: 'rating', required: false, description: 'filter by rating' })
+  @ApiQuery({ name: 'search', required: false, description: 'Search by keyword (eg vegan, birthday, taco)' })
+  @ApiQuery({ name: 'minPrice', required: false })
+  @ApiQuery({ name: 'maxPrice', required: false })
+  @ApiQuery({ name: 'sort', required: false })
+  async findAllEvents(
+    @Query() query: FilterEventDto
+  ) {
+    return await this.createEventService.findAllEvents(query);
   }
+
+
 
   @Get(':id')
   async findEventById(@Param('id') id: string) {

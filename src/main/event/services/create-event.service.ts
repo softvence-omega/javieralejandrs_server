@@ -3,11 +3,14 @@ import { PrismaService } from '@project/lib/prisma/prisma.service';
 import { CreateEventDto } from '../dto/create-event.dto';
 import { successResponse } from '@project/common/utils/response.util';
 import { UpdateEventDto } from '../dto/update-event.dto';
+import { HandleError } from '@project/common/error/handle-error.decorator';
+import { FilterEventDto } from '../dto/filter-event.dto';
 
 @Injectable()
 export class CreateEventService {
     constructor(private readonly prisma: PrismaService) { }
 
+    
     async createEvent(
         dto: CreateEventDto,
         hostId: string,
@@ -29,18 +32,72 @@ export class CreateEventService {
                 eventImage: eventImageUrl,
                 overViewImage: overViewImageUrls ?? [],
             },
-            //   include: {
-            //     host: true,
-            //   },
+            include: {
+                host: true,
+            },
         });
 
         return successResponse(event, 'Event created successfully!');
     }
 
-    async findAllEvents() {
-        const events = await this.prisma.event.findMany();
+    async findAllEvents(query: FilterEventDto) {
+        const { eventType, location, rating, minPrice, maxPrice, search } = query;
+        const events = await this.prisma.event.findMany({
+            where: {
+                AND: [
+                    location
+                        ? {
+                            location: {
+                                contains: location,
+                                mode: 'insensitive',
+                            },
+                        }
+                        : {},
+                    eventType ? { eventType } : {},
+                    search
+                        ? {
+                            OR: [
+                                {
+                                    shortName: {
+                                        contains: search,
+                                        mode: 'insensitive',
+                                    },
+                                },
+                                {
+                                    tags: {
+                                        has: search,
+                                    },
+                                },
+                            ],
+                        }
+                        : {},
+                    (minPrice || maxPrice)
+                        ? {
+                            price: {
+                                gte: minPrice ? Number(minPrice) : undefined,
+                                lte: maxPrice ? Number(maxPrice) : undefined,
+                            },
+                        }
+                        : {},
+                    rating
+                        ? {
+                            rating:
+                                Number(rating),
+                        }
+                        : {},
+                ],
+            },
+            orderBy: {
+                rating: 'desc',
+            },
+            //   include: {
+            //     host: true,
+            //   },
+
+        });
         return successResponse(events, 'Events fetched successfully!');
     }
+
 
     async findEventById(id: string) {
         const event = await this.prisma.event.findUnique({ where: { id } });
@@ -50,18 +107,10 @@ export class CreateEventService {
         return successResponse(event, 'Event fetched successfully!');
     }
 
-    //   async updateEvent(id: string, dto: UpdateEventDto) {
-    //     const event = await this.prisma.event.update({
-    //       where: { id },
-    //       data: dto,
-    //     });
-    //     return successResponse(event, 'Event updated successfully!');
-    //   }
-
     async updateEvent(id: string, dto: UpdateEventDto, eventImageUrl: string,
         overViewImageUrls?: string[]): Promise<any> {
         const existingEvent = await this.prisma.event.findUnique({ where: { id } });
-        console.log(dto, 'dto');
+        // console.log(dto, 'dto');
 
         if (!existingEvent) {
             throw new Error('Event not found!');
@@ -75,7 +124,7 @@ export class CreateEventService {
                 overViewImage: overViewImageUrls ?? [],
             },
         });
-        console.log(updated, 'updated');
+        // console.log(updated, 'updated');
 
         return successResponse(updated, 'Event updated successfully!');
     }
