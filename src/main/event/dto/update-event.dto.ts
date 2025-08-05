@@ -24,7 +24,11 @@ export class UpdateEventDto extends PartialType(CreateEventDto) {
   @IsString()
   shortOverview?: string;
 
-  @ApiPropertyOptional({ type: 'array', items: { type: 'string', format: 'binary' }, required: false })
+  @ApiPropertyOptional({
+    type: 'array',
+    items: { type: 'string', format: 'binary' },
+    required: false,
+  })
   @IsOptional()
   overViewImage?: any[];
 
@@ -41,13 +45,17 @@ export class UpdateEventDto extends PartialType(CreateEventDto) {
   @ApiPropertyOptional()
   @IsOptional()
   @IsArray()
-  @Transform(({ value }) => (typeof value === 'string' ? value.split(',') : value))
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.split(',') : value,
+  )
   tags?: string[];
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsArray()
-  @Transform(({ value }) => (typeof value === 'string' ? value.split(',') : value))
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.split(',') : value,
+  )
   extraText?: string[];
 
   @ApiPropertyOptional()

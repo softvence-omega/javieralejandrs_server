@@ -9,7 +9,7 @@ export class PrismaService
 {
   // * Expose Prisma utils (enums, filters, etc.)
   readonly utils = Prisma;
-    // event: any;
+  // event: any;
 
   constructor() {
     super({

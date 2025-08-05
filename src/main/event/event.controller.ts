@@ -8,14 +8,8 @@ import {
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import {
-  FileFieldsInterceptor,
-} from '@nestjs/platform-express';
-import {
-  ApiConsumes,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   GetUser,
   ValidateHostORAuthor,
@@ -32,7 +26,7 @@ export class EventController {
   constructor(
     private readonly createEventService: CreateEventService,
     private readonly cloudinaryService: CloudinaryService,
-  ) { }
+  ) {}
 
   @ValidateHostORAuthor()
   @Post('create-event')
@@ -95,8 +89,6 @@ export class EventController {
     return await this.createEventService.findEventById(id);
   }
 
-
-
   @ValidateHostORAuthor()
   @Post(':id/update-event')
   @ApiConsumes('multipart/form-data')
@@ -138,12 +130,16 @@ export class EventController {
       overViewImageUrls.push(uploaded.url);
     }
 
-    return await this.createEventService.updateEvent(id, updateEventDto, eventImageUrl, overViewImageUrls);
+    return await this.createEventService.updateEvent(
+      id,
+      updateEventDto,
+      eventImageUrl,
+      overViewImageUrls,
+    );
   }
 
   @Delete(':id')
   async deleteEvent(@Param('id') id: string) {
     return await this.createEventService.deleteEvent(id);
   }
-
 }

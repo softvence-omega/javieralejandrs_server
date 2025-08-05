@@ -21,8 +21,6 @@ import { FirebaseLoginDto } from './dto/firebase.dto';
 import { ForgotPasswordDto } from './dto/forget-password.dto';
 import { GoogleLoginDto } from './dto/google.login.dto';
 
-
-
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
