@@ -10,6 +10,7 @@ model event {
     extraText         String[]
     location          String
     price             Int
+    rating            Int?
     hostId            String
     host              User  @relation(fields: [hostId],references: [id])
 

@@ -1,7 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { EventType } from '@prisma/client';
-import { Transform } from 'class-transformer';
-import { IsArray, IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
+import { ApiProperty } from "@nestjs/swagger";
+import { EventType } from "@prisma/client";
+import { Transform } from "class-transformer";
+import { IsArray, IsEnum, IsInt, IsOptional, IsString, Max, max, Min } from "class-validator";
 
 export class CreateEventDto {
   @ApiProperty()
@@ -54,4 +54,11 @@ export class CreateEventDto {
   @IsInt()
   @Transform(({ value }) => parseInt(value, 10))
   price: number;
+
+  @ApiProperty()
+  @IsInt()
+  @Min(1)
+  @Max(5)
+  @Transform(({ value }) => parseInt(value, 10))
+  rating: number;
 }

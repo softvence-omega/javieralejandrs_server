@@ -20,6 +20,7 @@ CREATE TABLE "public"."event" (
     "extraText" TEXT[],
     "location" TEXT NOT NULL,
     "price" INTEGER NOT NULL,
+    "rating" INTEGER NOT NULL,
     "hostId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updateAt" TIMESTAMP(3) NOT NULL,
