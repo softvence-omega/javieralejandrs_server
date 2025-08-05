@@ -1,16 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@project/lib/prisma/prisma.service';
 import { CreateEventDto } from '../dto/create-event.dto';
-import { successResponse } from '@project/common/utils/response.util';
+import { successPaginatedResponse, successResponse } from '@project/common/utils/response.util';
 import { UpdateEventDto } from '../dto/update-event.dto';
-import { HandleError } from '@project/common/error/handle-error.decorator';
 import { FilterEventDto } from '../dto/filter-event.dto';
+import { parse } from 'path';
 
 @Injectable()
 export class CreateEventService {
     constructor(private readonly prisma: PrismaService) { }
 
-    
+
     async createEvent(
         dto: CreateEventDto,
         hostId: string,
@@ -41,7 +41,12 @@ export class CreateEventService {
     }
 
     async findAllEvents(query: FilterEventDto) {
-        const { eventType, location, rating, minPrice, maxPrice, search } = query;
+        const { eventType, location, rating, minPrice, maxPrice, search, page, limit } = query;
+
+        const take = parseInt(limit ?? '9') || 9;
+        const skip = (parseInt(page ?? '1') - 1) * take;
+
+
         const events = await this.prisma.event.findMany({
             where: {
                 AND: [
@@ -90,12 +95,14 @@ export class CreateEventService {
             orderBy: {
                 rating: 'desc',
             },
+            take,
+            skip,
             //   include: {
             //     host: true,
             //   },
 
         });
-        return successResponse(events, 'Events fetched successfully!');
+        return successPaginatedResponse(events, { page: parseInt(page ?? '1'), limit: take, total: events.length }, 'Events fetched successfully!');
     }
 
 
