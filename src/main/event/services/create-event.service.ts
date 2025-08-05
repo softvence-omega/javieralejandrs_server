@@ -8,7 +8,7 @@ import { parse } from 'path';
 
 @Injectable()
 export class CreateEventService {
-    constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
 
     async createEvent(

@@ -22,7 +22,7 @@ export class MailService {
     email: string,
     code: string,
   ): Promise<nodemailer.SentMessageInfo> {
-    console.log(email)
+    console.log(email);
     const mailOptions = {
       from: `"No Reply" <${this.configService.get<string>(ENVEnum.MAIL_USER)}>`,
       to: email,
@@ -52,8 +52,6 @@ export class MailService {
     return this.transporter.sendMail(mailOptions);
   }
 }
-
-
 
 // import { Injectable } from '@nestjs/common';
 // import * as nodemailer from 'nodemailer';

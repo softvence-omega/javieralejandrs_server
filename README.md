@@ -7,13 +7,13 @@
 docker run --name local-postgres \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=postgres \
-  -e POSTGRES_DB=jesus_db \
+  -e POSTGRES_DB=javier_db \
   -p 5400:5432 \
   -v pgdata:/var/lib/postgresql/data \
   -d postgres:16
 ```
 
-- Access via: `postgresql://myuser:mypassword@localhost:5400/javier`
+- Access via: `postgresql://postgres:postgres@localhost:5400/javier`
 
 ---
 
