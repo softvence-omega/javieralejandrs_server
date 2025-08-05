@@ -23,6 +23,8 @@ model User {
   isPopular  Boolean? //use for author
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
+
+  event event[]
 }
 
 
