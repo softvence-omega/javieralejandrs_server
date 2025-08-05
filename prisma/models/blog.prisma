@@ -26,6 +26,7 @@ model Like {
   userId    String
   blogId    String
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
   user      User     @relation(fields: [userId], references: [id])
@@ -36,7 +37,6 @@ model Like {
 
 model Comment {
   id        String   @id @default(uuid())
-  content   String
   userId    String
   blogId    String
   createdAt DateTime @default(now())
@@ -49,12 +49,12 @@ model Comment {
 
 model View {
   id        String   @id @default(uuid())
-  userId    String?  // Optional - for anonymous views
+  userId    String
   blogId    String
-  ipAddress String?  // Track anonymous views by IP
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  user      User?    @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
   blog      Blog     @relation(fields: [blogId], references: [id])
 }
