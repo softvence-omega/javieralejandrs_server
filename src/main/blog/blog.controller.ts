@@ -1,4 +1,3 @@
-import { User } from './../../../node_modules/.prisma/client/index.d';
 import {
   Body,
   Controller,
@@ -12,13 +11,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { GetUser, ValidateAuth } from '@project/common/jwt/jwt.decorator';
 import { JwtAuthGuard } from '@project/common/jwt/jwt.guard';
 import { Request } from 'express';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
-import { GetUser, ValidateAuth } from '@project/common/jwt/jwt.decorator';
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -166,6 +165,7 @@ export class BlogController {
   }
 
   @Get(':id')
+  @ValidateAuth()
   @ApiOperation({ summary: 'Get a blog post by ID' })
   @ApiResponse({
     status: 200,
@@ -175,9 +175,12 @@ export class BlogController {
     status: 404,
     description: 'Blog post not found',
   })
-  async getBlogById(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
-    const userId = req.user?.id; // Optional user for view tracking
-    return this.blogService.getBlogById(id, userId);
+  async getBlogById(
+    @Param('id') id: string,
+    @GetUser('userId') userId: string,
+  ) {
+    const user_Id = userId; // Optional userId for authenticated users
+    return this.blogService.getBlogById(id, user_Id);
   }
 
   @Patch(':id')
@@ -231,7 +234,7 @@ export class BlogController {
   }
 
   @Post(':id/like')
-  @UseGuards(JwtAuthGuard)
+  @ValidateAuth()
   @ApiOperation({ summary: 'Like or unlike a blog post' })
   @ApiResponse({
     status: 200,
@@ -241,12 +244,12 @@ export class BlogController {
     status: 401,
     description: 'Unauthorized - JWT token required',
   })
-  async likeBlog(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
-    return this.blogService.likeBlog(id, req.user.id);
+  async likeBlog(@Param('id') id: string, @GetUser('userId') userId: string) {
+    return this.blogService.likeBlog(id, userId);
   }
 
   @Post(':id/comment')
-  @UseGuards(JwtAuthGuard)
+  @ValidateAuth()
   @ApiOperation({ summary: 'Add a comment to a blog post' })
   @ApiResponse({
     status: 201,
@@ -263,9 +266,9 @@ export class BlogController {
   async addComment(
     @Param('id') blogId: string,
     @Body() createCommentDto: CreateCommentDto,
-    @Req() req: AuthenticatedRequest,
+    @GetUser('userId') userId: string,
   ) {
-    return this.blogService.addComment(blogId, req.user.id, createCommentDto);
+    return this.blogService.addComment(blogId, userId, createCommentDto);
   }
 
   @Get(':id/comments')

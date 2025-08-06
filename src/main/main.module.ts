@@ -5,9 +5,18 @@ import { AuthModule } from './auth/auth.module';
 import { BlogModule } from './blog/blog.module';
 import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
+import { RecentActivityController } from './recent-activity/recent-activity.controller';
+import { RecentActivityModule } from './recent-activity/recent-activity.module';
 @Module({
-  imports: [AuthModule, PrismaModule, EventModule, BlogModule, UserModule],
-  controllers: [UserController],
+  imports: [
+    AuthModule,
+    PrismaModule,
+    EventModule,
+    BlogModule,
+    UserModule,
+    RecentActivityModule,
+  ],
+  controllers: [UserController, RecentActivityController],
   providers: [],
 })
 export class MainModule {}
