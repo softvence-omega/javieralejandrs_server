@@ -19,7 +19,6 @@ import { CreateBlogDto } from './dto/create-blog.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { GetUser, ValidateAuth } from '@project/common/jwt/jwt.decorator';
-import { UserEnum } from '@project/common/enum/user.enum';
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -41,8 +40,6 @@ export class BlogController {
     @Body() createBlogDto: CreateBlogDto,
     @GetUser('userId') userId: string,
   ) {
-    console.log(createBlogDto, 'createBlogDto');
-    console.log(userId, 'userId from decorator');
     return await this.blogService.createBlog(createBlogDto, userId);
   }
 
