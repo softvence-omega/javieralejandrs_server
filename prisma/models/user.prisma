@@ -1,40 +1,34 @@
+model User {
+  id               String    @unique @default(uuid())
+  userName         String?
+  email            String    @unique
+  password         String
+  role             userRole  @default(USER)
+  name             String?
+  images           String?
+  location         String?
+  bio              String?
+  phoneNo          String?
+  provider         String?
+  providerId       String?
+  resetToken       String?
+  resetTokenExpiry DateTime?
+  isPopular        Boolean?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  planId           String?
+  plan             Plan?     @relation("UserPlan", fields: [planId], references: [id])
+  blogs            Blog[]
+  Brand            Brand?
+  comments         Comment[]
+  likes            Like[]
+  views            View[]
+  event            event[]
+}
+
 enum userRole {
   USER
   ADMIN
   SUPER_ADMIN
   HOST
 }
-
-model User {
-  id         String       @unique @default(uuid())
-  userName   String?
-  email      String       @unique
-  password   String
-  role       userRole     @default(USER)
-  name       String?
-  images     String?
-  location   String?
-  bio        String?
-  phoneNo    String?
-  provider    String?   
-  providerId  String?  
-  resetToken  String?
-  resetTokenExpiry DateTime? 
-  isPopular  Boolean? //use for author
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-
-  // Relations
-  blogs      Blog[]
-  likes      Like[]
-  comments   Comment[]
-  views      View[]
-
-  planId   String?  
-  plan Plan? @relation(name: "UserPlan",fields: [planId], references: [id])
-
-  Brand Brand?
-  event event[]
-}
-
-

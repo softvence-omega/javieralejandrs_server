@@ -1,5 +1,14 @@
--- AlterTable
-ALTER TABLE "public"."User" ADD COLUMN     "planId" TEXT;
+-- CreateEnum
+CREATE TYPE "public"."EventType" AS ENUM ('Birthday', 'Wedding', 'Party', 'Get_together');
+
+-- CreateEnum
+CREATE TYPE "public"."FileType" AS ENUM ('image', 'docs', 'link');
+
+-- CreateEnum
+CREATE TYPE "public"."PlanType" AS ENUM ('STARTER', 'GROWTH', 'ENTERPRISE');
+
+-- CreateEnum
+CREATE TYPE "public"."userRole" AS ENUM ('USER', 'ADMIN', 'SUPER_ADMIN', 'HOST');
 
 -- CreateTable
 CREATE TABLE "public"."Blog" (
@@ -69,18 +78,63 @@ CREATE TABLE "public"."Brand" (
 );
 
 -- CreateTable
+CREATE TABLE "public"."event" (
+    "id" TEXT NOT NULL,
+    "shortName" TEXT NOT NULL,
+    "shortDescription" TEXT NOT NULL,
+    "eventImage" TEXT NOT NULL,
+    "shortOverview" TEXT NOT NULL,
+    "overViewImage" TEXT[],
+    "tags" TEXT[],
+    "eventType" "public"."EventType" NOT NULL,
+    "extraText" TEXT[],
+    "location" TEXT NOT NULL,
+    "price" INTEGER NOT NULL,
+    "rating" INTEGER,
+    "hostId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updateAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "event_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "public"."Plan" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
+    "type" "public"."PlanType" NOT NULL,
     "description" TEXT,
     "price" DOUBLE PRECISION NOT NULL,
     "duration" INTEGER NOT NULL,
     "features" TEXT[],
     "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "stripeProductId" TEXT,
+    "stripePriceId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Plan_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."User" (
+    "id" TEXT NOT NULL,
+    "userName" TEXT,
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "role" "public"."userRole" NOT NULL DEFAULT 'USER',
+    "name" TEXT,
+    "images" TEXT,
+    "location" TEXT,
+    "bio" TEXT,
+    "phoneNo" TEXT,
+    "provider" TEXT,
+    "providerId" TEXT,
+    "resetToken" TEXT,
+    "resetTokenExpiry" TIMESTAMP(3),
+    "isPopular" BOOLEAN,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "planId" TEXT
 );
 
 -- CreateIndex
@@ -89,29 +143,41 @@ CREATE UNIQUE INDEX "Like_userId_blogId_key" ON "public"."Like"("userId", "blogI
 -- CreateIndex
 CREATE UNIQUE INDEX "Brand_userId_key" ON "public"."Brand"("userId");
 
--- AddForeignKey
-ALTER TABLE "public"."Blog" ADD CONSTRAINT "Blog_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+-- CreateIndex
+CREATE UNIQUE INDEX "event_id_key" ON "public"."event"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_id_key" ON "public"."User"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "public"."User"("email");
 
 -- AddForeignKey
-ALTER TABLE "public"."Like" ADD CONSTRAINT "Like_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."Blog" ADD CONSTRAINT "Blog_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."Like" ADD CONSTRAINT "Like_blogId_fkey" FOREIGN KEY ("blogId") REFERENCES "public"."Blog"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."Comment" ADD CONSTRAINT "Comment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."Like" ADD CONSTRAINT "Like_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."Comment" ADD CONSTRAINT "Comment_blogId_fkey" FOREIGN KEY ("blogId") REFERENCES "public"."Blog"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."View" ADD CONSTRAINT "View_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."Comment" ADD CONSTRAINT "Comment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."View" ADD CONSTRAINT "View_blogId_fkey" FOREIGN KEY ("blogId") REFERENCES "public"."Blog"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "public"."View" ADD CONSTRAINT "View_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "public"."Brand" ADD CONSTRAINT "Brand_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."event" ADD CONSTRAINT "event_hostId_fkey" FOREIGN KEY ("hostId") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."User" ADD CONSTRAINT "User_planId_fkey" FOREIGN KEY ("planId") REFERENCES "public"."Plan"("id") ON DELETE SET NULL ON UPDATE CASCADE;

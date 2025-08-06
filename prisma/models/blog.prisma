@@ -1,24 +1,22 @@
 model Blog {
-  id                String    @id @default(uuid())
-  title             String
-  blogThumbnail     String?
-  authorId          String
-  shortInto         String?
-  themes            String?
+  id                  String    @id @default(uuid())
+  title               String
+  blogThumbnail       String?
+  authorId            String
+  shortInto           String?
+  themes              String?
   decor_entertainment String?
-  conclusion        String?
-  readTime          String?
-  likeCount         Int       @default(0)
-  commentCount      Int       @default(0)
-  viewCount         Int       @default(0)
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
-  // Relations
-  author            User      @relation(fields: [authorId], references: [id])
-  likes             Like[]
-  comments          Comment[]
-  views             View[]
+  conclusion          String?
+  readTime            String?
+  likeCount           Int       @default(0)
+  commentCount        Int       @default(0)
+  viewCount           Int       @default(0)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  author              User      @relation(fields: [authorId], references: [id])
+  comments            Comment[]
+  likes               Like[]
+  views               View[]
 }
 
 model Like {
@@ -27,12 +25,10 @@ model Like {
   blogId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  // Relations
-  user      User     @relation(fields: [userId], references: [id])
   blog      Blog     @relation(fields: [blogId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
-  @@unique([userId, blogId]) // Prevent duplicate likes from same user on same blog
+  @@unique([userId, blogId])
 }
 
 model Comment {
@@ -42,10 +38,8 @@ model Comment {
   blogId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  // Relations
-  user      User     @relation(fields: [userId], references: [id])
   blog      Blog     @relation(fields: [blogId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model View {
@@ -54,8 +48,6 @@ model View {
   blogId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  // Relations
-  user      User     @relation(fields: [userId], references: [id])
   blog      Blog     @relation(fields: [blogId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }

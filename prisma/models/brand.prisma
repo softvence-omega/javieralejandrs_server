@@ -5,7 +5,6 @@ model Brand {
   website   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  userId  String? @unique
-  user User? @relation(fields: [userId], references: [id])
+  userId    String?  @unique
+  user      User?    @relation(fields: [userId], references: [id])
 }
