@@ -5,8 +5,9 @@ import { AuthModule } from './auth/auth.module';
 import { BlogModule } from './blog/blog.module';
 import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
+import { SubscriptionPlanModule } from './subscription-plan/subscription-plan.module';
 @Module({
-  imports: [AuthModule, PrismaModule, EventModule, BlogModule, UserModule],
+  imports: [AuthModule, PrismaModule, EventModule, BlogModule, UserModule, SubscriptionPlanModule],
   controllers: [UserController],
   providers: [],
 })
