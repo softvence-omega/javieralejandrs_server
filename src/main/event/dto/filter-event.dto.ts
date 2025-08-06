@@ -33,10 +33,9 @@ export class FilterEventDto {
 
   @IsOptional()
   @IsString()
-  page?: string ;
+  page?: string;
 
   @IsOptional()
   @IsString()
-  limit?: string ;
-
+  limit?: string;
 }
