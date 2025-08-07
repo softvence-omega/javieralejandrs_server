@@ -28,6 +28,7 @@ import { CreateEventService } from './services/create-event.service';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { EventType } from '@prisma/client';
 import { FilterEventDto } from './dto/filter-event.dto';
+import { FilterByCategoryEventDto } from './dto/filterBycategory-event.dto';
 
 @ApiTags('----Event')
 @Controller('event')
@@ -89,6 +90,7 @@ export class EventController {
     );
   }
 
+//  get all events
 
   @Get()
   @ApiQuery({ name: 'eventType', enum: EventType, required: false })
@@ -103,6 +105,16 @@ export class EventController {
     return await this.createEventService.findAllEvents(query);
   }
 
+  // all events by individual host
+  @Get('host/:id')
+  @ApiQuery({ name: 'eventType', enum: EventType, required: false })
+  
+  async findAllEventsByIndividualHost(
+    @Query() query: FilterByCategoryEventDto, @Param('id') id: string
+  ) {
+    return await this.createEventService.findAllEventsByIndividualHost(query, id);
+  }
+
 
 
   @Get(':id')
@@ -111,7 +123,7 @@ export class EventController {
   }
 
   @ValidateHostORAuthor()
-  @Post(':id/update-event')
+  @Post('update-event/:id')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(
     FileFieldsInterceptor([

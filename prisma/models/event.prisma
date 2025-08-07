@@ -22,4 +22,8 @@ enum EventType {
   Wedding
   Party
   Get_together
+  DJ_Party
+  Catering
+  Bounce_House
+  Photography
 }
