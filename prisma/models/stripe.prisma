@@ -1,0 +1,20 @@
+model Payment {
+  id               String @unique   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  planId           String 
+  plan             Plan     @relation(fields: [planId], references: [id])
+  status           PaymentStatus 
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  cancelAtPeriodEnd  Boolean @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+
+enum PaymentStatus {
+  active
+  canceled
+  unpaid
+}
