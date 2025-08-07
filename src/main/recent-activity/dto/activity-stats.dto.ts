@@ -59,3 +59,29 @@ export class DailyActivityDto {
   })
   comments: number;
 }
+
+export class MonthlyViewStatsDto {
+  @ApiProperty({
+    description: 'Year of the data',
+    example: 2025,
+  })
+  year: number;
+
+  @ApiProperty({
+    description: 'Month number (1-12)',
+    example: 2,
+  })
+  month: number;
+
+  @ApiProperty({
+    description: 'Month name abbreviation',
+    example: 'Feb',
+  })
+  monthName: string;
+
+  @ApiProperty({
+    description: 'View count for this month',
+    example: 100,
+  })
+  viewCount: number;
+}
