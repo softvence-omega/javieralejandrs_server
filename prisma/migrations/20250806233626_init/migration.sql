@@ -8,6 +8,9 @@ CREATE TYPE "public"."FileType" AS ENUM ('image', 'docs', 'link');
 CREATE TYPE "public"."PlanType" AS ENUM ('STARTER', 'GROWTH', 'ENTERPRISE');
 
 -- CreateEnum
+CREATE TYPE "public"."PaymentStatus" AS ENUM ('active', 'canceled', 'unpaid');
+
+-- CreateEnum
 CREATE TYPE "public"."userRole" AS ENUM ('USER', 'ADMIN', 'SUPER_ADMIN', 'HOST');
 
 -- CreateTable
@@ -116,6 +119,21 @@ CREATE TABLE "public"."Plan" (
 );
 
 -- CreateTable
+CREATE TABLE "public"."Payment" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "planId" TEXT NOT NULL,
+    "status" "public"."PaymentStatus" NOT NULL,
+    "currentPeriodStart" TIMESTAMP(3) NOT NULL,
+    "currentPeriodEnd" TIMESTAMP(3) NOT NULL,
+    "cancelAtPeriodEnd" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Payment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "public"."User" (
     "id" TEXT NOT NULL,
     "userName" TEXT,
@@ -145,6 +163,9 @@ CREATE UNIQUE INDEX "Brand_userId_key" ON "public"."Brand"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "event_id_key" ON "public"."event"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Payment_id_key" ON "public"."Payment"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_id_key" ON "public"."User"("id");
@@ -178,6 +199,12 @@ ALTER TABLE "public"."Brand" ADD CONSTRAINT "Brand_userId_fkey" FOREIGN KEY ("us
 
 -- AddForeignKey
 ALTER TABLE "public"."event" ADD CONSTRAINT "event_hostId_fkey" FOREIGN KEY ("hostId") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."Payment" ADD CONSTRAINT "Payment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."Payment" ADD CONSTRAINT "Payment_planId_fkey" FOREIGN KEY ("planId") REFERENCES "public"."Plan"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."User" ADD CONSTRAINT "User_planId_fkey" FOREIGN KEY ("planId") REFERENCES "public"."Plan"("id") ON DELETE SET NULL ON UPDATE CASCADE;

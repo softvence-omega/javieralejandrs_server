@@ -12,6 +12,8 @@ model Plan {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   User        User[]   @relation("UserPlan")
+  payments    Payment[]
+  
 }
 
 enum PlanType {

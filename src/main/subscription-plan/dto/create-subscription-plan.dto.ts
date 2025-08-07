@@ -27,5 +27,5 @@ export class CreateSubscriptionPlanDto {
   @ApiProperty({ type: [String] })
   @IsArray()
   @IsString({ each: true })
-  feature: string[];
+  features: string[];
 }

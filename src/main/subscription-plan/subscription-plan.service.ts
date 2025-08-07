@@ -23,7 +23,7 @@ export class SubscriptionPlanService {
       description: `${dto.type} subscription plan`,
       metadata: {
         planType: dto.type,
-        features: dto.feature?.join(',') || '',
+        features: dto.features?.join(',') || '',
       },
     });
     // console.log(stripeProduct, 'stripeProduct');
@@ -54,7 +54,7 @@ export class SubscriptionPlanService {
         description: dto.description,
         price: dto.price,
         duration: dto.duration,
-        features: dto.feature,
+        features: dto.features,
         stripeProductId: stripeProduct.id,
         stripePriceId: stripePrice.id
       },
