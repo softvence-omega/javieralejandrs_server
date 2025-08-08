@@ -5,10 +5,11 @@ import { successPaginatedResponse, successResponse } from '@project/common/utils
 import { UpdateEventDto } from '../dto/update-event.dto';
 import { FilterEventDto } from '../dto/filter-event.dto';
 import { parse } from 'path';
+import { FilterByCategoryEventDto } from '../dto/filterBycategory-event.dto';
 
 @Injectable()
 export class CreateEventService {
-  constructor(private readonly prisma: PrismaService) {}
+    constructor(private readonly prisma: PrismaService) { }
 
 
     async createEvent(
@@ -97,14 +98,41 @@ export class CreateEventService {
             },
             take,
             skip,
-            //   include: {
-            //     host: true,
-            //   },
+              include: {
+                host: true,
+              },
 
         });
         return successPaginatedResponse(events, { page: parseInt(page ?? '1'), limit: take, total: events.length }, 'Events fetched successfully!');
     }
 
+
+    async findAllEventsByIndividualHost(query: FilterByCategoryEventDto, hostId: string) {
+           const { eventType, page, limit } = query;
+
+        const take = parseInt(limit ?? '9') || 9;
+        const skip = (parseInt(page ?? '1') - 1) * take;
+        const host = await this.prisma.user.findUnique({
+            where: { id: hostId },
+            //  include: { event: { where: { eventType: query.eventType } }  } 
+        });
+        if (!host) {
+            throw new NotFoundException('Host does not exist');
+        }
+        const event = await this.prisma.event.findMany({
+            where: {
+                eventType: eventType,
+            },
+            include: {
+                host: true,
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        })
+        console.log(event, 'event');
+        return successResponse(event, 'All Events by individual host fetched successfully!');
+    }
 
     async findEventById(id: string) {
         const event = await this.prisma.event.findUnique({ where: { id } });

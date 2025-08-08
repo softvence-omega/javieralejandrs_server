@@ -16,6 +16,11 @@ export class SubscriptionPlanService {
     })
   }
   async createSubscription(dto: CreateSubscriptionPlanDto ) {
+
+     const isExist = await this.prisma.plan.findFirst({ where: { type: dto.type } });
+    if (isExist) {
+      throw new BadRequestException('Plan already exist');
+    }
     // console.log(await this.stripe.products.create)
 
     const stripeProduct = await this.stripe.products.create({
@@ -43,10 +48,7 @@ export class SubscriptionPlanService {
 
     // console.log(stripePrice, 'stripePrice');
 
-    const isExist = await this.prisma.plan.findFirst({ where: { type: dto.type } });
-    if (isExist) {
-      throw new BadRequestException('Plan already exist');
-    }
+  
 
     const plan = await this.prisma.plan.create({
       data: {

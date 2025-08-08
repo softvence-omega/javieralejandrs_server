@@ -1,6 +1,6 @@
 import { IsOptional, IsString, IsEnum, IsNumberString } from 'class-validator';
 import { EventType } from '@prisma/client';
-import { PaginationDto } from '@project/common/dto/pagination.dto';
+// import { PaginationDto } from '@project/common/dto/pagination.dto';
 
 export class FilterEventDto {
   @IsOptional()
