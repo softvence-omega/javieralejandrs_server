@@ -1,4 +1,4 @@
-import { Body, Controller, Get, InternalServerErrorException, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, InternalServerErrorException, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiConsumes,
@@ -10,17 +10,19 @@ import { GetUser, ValidateAdmin, ValidateAuth } from '../../common/jwt/jwt.decor
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { UserService } from './user.service';
-import {  FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from '@project/lib/cloudinary/cloudinary.service';
 import { EditProfileDto } from './dto/edit-profile.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto';
+import { SocialProfileDto } from './dto/social-profile.dto';
 
 
 @ApiTags('Users')
-@Controller('user')
+@Controller('user/me')
 export class UserController {
-  constructor(private readonly userService: UserService, private readonly cloudinaryService: CloudinaryService) {}
+  constructor(private readonly userService: UserService, private readonly cloudinaryService: CloudinaryService) { }
 
-@Get('all-users')
+  @Get('all-users')
   @ValidateAdmin()
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all users' })
@@ -29,7 +31,7 @@ export class UserController {
     return await this.userService.getAllUsers();
   }
 
-@Get('user/:id')
+  @Get('user/:id')
   @ValidateAuth()
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get single user' })
@@ -56,36 +58,56 @@ export class UserController {
   }
 
 
-   @Put('edit-profile')
+  @Put('edit-profile')
   @ValidateAuth()
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update current user profile' })
   @UseInterceptors(FileInterceptor('images'))
   @ApiConsumes('multipart/form-data')
   async editProfile(
-  @GetUser('userId') userId: string,
-  @Body() dto: EditProfileDto,
-  @UploadedFile() file?: Express.Multer.File,
-) {
-  try {
-    let imageUrl: string | undefined;
+    @GetUser('userId') userId: string,
+    @Body() dto: EditProfileDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    try {
+      let imageUrl: string | undefined;
 
-    if (file) {
-      const uploadResult = await this.cloudinaryService.uploadImageFromBuffer(
-        file.buffer,
-        file.originalname,
-        'profile-images',
-      );
-      imageUrl = uploadResult.secure_url;
+      if (file) {
+        const uploadResult = await this.cloudinaryService.uploadImageFromBuffer(
+          file.buffer,
+          file.originalname,
+          'profile-images',
+        );
+        imageUrl = uploadResult.secure_url;
+      }
+
+      return await this.userService.editUserProfile(userId, {
+        ...dto,
+        ...(imageUrl && { images: imageUrl }),
+      });
+    } catch (error) {
+      console.error('editProfile error:', error);
+      throw new InternalServerErrorException('Failed to update profile');
     }
-
-    return await this.userService.editUserProfile(userId, {
-      ...dto,
-      ...(imageUrl && { images: imageUrl }),
-    });
-  } catch (error) {
-    console.error('editProfile error:', error);
-    throw new InternalServerErrorException('Failed to update profile');
   }
-}
+
+  // Update Password
+  @Post('update-password')
+  @ValidateAuth()
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Follow a user' })
+  async updatePassword(@GetUser('userId') userId: string, @Body() dto: UpdatePasswordDto) {
+    return await this.userService.updatePassword(userId, dto);
+  }
+
+  // SocialProfile 
+  @Post('social-profile')
+  @ValidateAuth()
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Follow a user' })
+  async socialProfile(@GetUser('userId') userId: string, @Body() dto: SocialProfileDto) {
+    return await this.userService.socialProfile(userId, dto);
+  }
+
+
 }
