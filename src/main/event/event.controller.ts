@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   UploadedFiles,
@@ -123,7 +124,7 @@ export class EventController {
   }
 
   @ValidateHostORAuthor()
-  @Post('update-event/:id')
+  @Patch('update-event/:id')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(
     FileFieldsInterceptor([
