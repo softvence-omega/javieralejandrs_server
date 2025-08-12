@@ -9,15 +9,8 @@ import {
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import {
-  FileFieldsInterceptor,
-} from '@nestjs/platform-express';
-import {
-  ApiConsumes,
-  ApiOperation,
-  ApiQuery,
-  ApiTags,
-} from '@nestjs/swagger';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { ApiConsumes, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import {
   GetUser,
   ValidateHostORAuthor,
@@ -89,22 +82,29 @@ export class EventController {
     );
   }
 
-
   @Get()
   @ApiQuery({ name: 'eventType', enum: EventType, required: false })
-  @ApiQuery({ name: 'location', required: false, description: 'Search by location' })
-  @ApiQuery({ name: 'rating', required: false, description: 'filter by rating' })
-  @ApiQuery({ name: 'search', required: false, description: 'Search by keyword (eg vegan, birthday, taco)' })
+  @ApiQuery({
+    name: 'location',
+    required: false,
+    description: 'Search by location',
+  })
+  @ApiQuery({
+    name: 'rating',
+    required: false,
+    description: 'filter by rating',
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description: 'Search by keyword (eg vegan, birthday, taco)',
+  })
   @ApiQuery({ name: 'minPrice', required: false })
   @ApiQuery({ name: 'maxPrice', required: false })
   @ApiQuery({ name: 'sort', required: false })
-  async findAllEvents(
-    @Query() query: FilterEventDto
-  ) {
+  async findAllEvents(@Query() query: FilterEventDto) {
     return await this.createEventService.findAllEvents(query);
   }
-
-
 
   @Get(':id')
   async findEventById(@Param('id') id: string) {
