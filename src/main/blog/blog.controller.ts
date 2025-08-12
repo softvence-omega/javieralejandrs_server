@@ -1,4 +1,3 @@
-import { User } from './../../../node_modules/.prisma/client/index.d';
 import {
   Body,
   Controller,
@@ -12,14 +11,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { GetUser, ValidateAuth } from '@project/common/jwt/jwt.decorator';
 import { JwtAuthGuard } from '@project/common/jwt/jwt.guard';
 import { Request } from 'express';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
-import { GetUser, ValidateAuth } from '@project/common/jwt/jwt.decorator';
-import { UserEnum } from '@project/common/enum/user.enum';
+
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -32,7 +31,7 @@ interface AuthenticatedRequest extends Request {
 @ApiTags('Blog')
 @Controller('blog')
 export class BlogController {
-  constructor(private readonly blogService: BlogService) {}
+  constructor(private readonly blogService: BlogService) { }
 
   @Post()
   @ApiOperation({ summary: 'Create a new blog post' })

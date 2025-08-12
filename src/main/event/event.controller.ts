@@ -10,15 +10,8 @@ import {
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import {
-  FileFieldsInterceptor,
-} from '@nestjs/platform-express';
-import {
-  ApiConsumes,
-  ApiOperation,
-  ApiQuery,
-  ApiTags,
-} from '@nestjs/swagger';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { ApiConsumes, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import {
   GetUser,
   ValidateHostORAuthor,
@@ -91,32 +84,43 @@ export class EventController {
     );
   }
 
-//  get all events
+  //  get all events
 
   @Get()
   @ApiQuery({ name: 'eventType', enum: EventType, required: false })
-  @ApiQuery({ name: 'location', required: false, description: 'Search by location' })
-  @ApiQuery({ name: 'rating', required: false, description: 'filter by rating' })
-  @ApiQuery({ name: 'search', required: false, description: 'Search by keyword (eg vegan, birthday, taco)' })
+  @ApiQuery({
+    name: 'location',
+    required: false,
+    description: 'Search by location',
+  })
+  @ApiQuery({
+    name: 'rating',
+    required: false,
+    description: 'filter by rating',
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description: 'Search by keyword (eg vegan, birthday, taco)',
+  })
   @ApiQuery({ name: 'minPrice', required: false })
   @ApiQuery({ name: 'maxPrice', required: false })
-  async findAllEvents(
-    @Query() query: FilterEventDto
-  ) {
+  async findAllEvents(@Query() query: FilterEventDto) {
     return await this.createEventService.findAllEvents(query);
   }
 
   // all events by individual host
   @Get('host/:id')
   @ApiQuery({ name: 'eventType', enum: EventType, required: false })
-  
   async findAllEventsByIndividualHost(
-    @Query() query: FilterByCategoryEventDto, @Param('id') id: string
+    @Query() query: FilterByCategoryEventDto,
+    @Param('id') id: string,
   ) {
-    return await this.createEventService.findAllEventsByIndividualHost(query, id);
+    return await this.createEventService.findAllEventsByIndividualHost(
+      query,
+      id,
+    );
   }
-
-
 
   @Get(':id')
   async findEventById(@Param('id') id: string) {

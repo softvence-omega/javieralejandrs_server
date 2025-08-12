@@ -7,8 +7,18 @@ import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { SubscriptionPlanModule } from './subscription-plan/subscription-plan.module';
 import { StripeModule } from './stripe/stripe.module';
+import { NewslatterModule } from './newslatter/newslatter.module';
 @Module({
-  imports: [AuthModule, PrismaModule, EventModule, BlogModule, UserModule, SubscriptionPlanModule, StripeModule],
+  imports: [
+    AuthModule,
+    PrismaModule,
+    EventModule,
+    BlogModule,
+    UserModule,
+    SubscriptionPlanModule,
+    StripeModule,
+    NewslatterModule,
+  ],
   controllers: [UserController],
   providers: [],
 })

@@ -22,7 +22,6 @@ export class CloudinaryService {
     });
   }
 
-
   async uploadImageFromBuffer(
     fileBuffer: Buffer,
     filename: string,

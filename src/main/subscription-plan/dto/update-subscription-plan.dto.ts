@@ -1,10 +1,18 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { CreateSubscriptionPlanDto } from './create-subscription-plan.dto';
 import { PlanType } from '@prisma/client';
-import { IsArray, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
-export class UpdateSubscriptionPlanDto extends PartialType(CreateSubscriptionPlanDto) {
-   @ApiProperty({ enum: PlanType })
+export class UpdateSubscriptionPlanDto extends PartialType(
+  CreateSubscriptionPlanDto,
+) {
+  @ApiProperty({ enum: PlanType })
   @IsEnum(PlanType)
   @IsOptional()
   type?: PlanType;

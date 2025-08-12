@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { ENVEnum } from '@project/common/enum/env.enum';
 import { PrismaService } from '@project/lib/prisma/prisma.service';
 import { UtilsService } from '@project/lib/utils/utils.service';
-import chalk from 'chalk';
 
 @Injectable()
 export class AdminService implements OnModuleInit {

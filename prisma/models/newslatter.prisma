@@ -1,0 +1,6 @@
+model Newslatter{
+    id String @id @default(uuid())
+    email String @unique
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}

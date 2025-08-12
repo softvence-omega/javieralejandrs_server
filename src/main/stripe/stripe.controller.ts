@@ -1,17 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req, Headers } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { StripeService } from './stripe.service';
 import { CreateStripeDto } from './dto/create-stripe.dto';
-
 
 @Controller('stripe')
 export class StripeController {
   constructor(private readonly stripeService: StripeService) {}
 
   @Post('checkout')
-async createCheckoutSession(@Body() dto: CreateStripeDto) {
-  return await this.stripeService.createCheckoutSession(dto )
-}
-
+  async createCheckoutSession(@Body() dto: CreateStripeDto) {
+    return await this.stripeService.createCheckoutSession(dto);
+  }
 
   // @Post('webhook')
   // async handleStripeWebhook(
