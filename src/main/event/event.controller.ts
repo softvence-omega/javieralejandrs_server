@@ -84,8 +84,6 @@ export class EventController {
     );
   }
 
-  //  get all events
-
   @Get()
   @ApiQuery({ name: 'eventType', enum: EventType, required: false })
   @ApiQuery({
@@ -105,6 +103,7 @@ export class EventController {
   })
   @ApiQuery({ name: 'minPrice', required: false })
   @ApiQuery({ name: 'maxPrice', required: false })
+  @ApiQuery({ name: 'sort', required: false })
   async findAllEvents(@Query() query: FilterEventDto) {
     return await this.createEventService.findAllEvents(query);
   }

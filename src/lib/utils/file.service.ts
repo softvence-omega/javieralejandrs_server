@@ -1,25 +1,18 @@
-import {
-  Injectable,
-  InternalServerErrorException
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FileType } from '@prisma/client';
 import * as fs from 'fs';
 import mime from 'mime-types';
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
-import { PrismaService } from '../prisma/prisma.service';
 import { CreateFileDto } from './dto/createFile.dto';
 
 @Injectable()
 export class FileService {
-  constructor(
-    private readonly dbService: PrismaService,
-    private readonly configService: ConfigService,
-  ) { }
+  constructor(private readonly configService: ConfigService) {}
 
   async create(createFileDto: CreateFileDto) {
-    console.log(createFileDto, 'createFileDto');
+    console.log(createFileDto);
     // try {
     //   const file = await this.dbService.fileInstance.create({
     //     data: createFileDto,

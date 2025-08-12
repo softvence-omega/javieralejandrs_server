@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { EditProfileDto } from './dto/edit-profile.dto';
 import { successResponse } from '@project/common/utils/response.util';
-import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UtilsService } from '@project/lib/utils/utils.service';
 import bcrypt from 'bcrypt';
+import { PrismaService } from '../prisma/prisma.service';
+import { EditProfileDto } from './dto/edit-profile.dto';
 import { SocialProfileDto } from './dto/social-profile.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -155,14 +155,14 @@ export class UserService {
     return successResponse(result, 'Social profile updated successfully!');
   }
 
-  async deleteUser(id: string) {
-    try {
-      const deletedUser = await this.prisma.user.delete({
-        where: { id },
-      });
-      return successResponse(deletedUser, 'User deleted successfully!');
-    } catch (error) {
-      throw new NotFoundException('User not found', error);
-    }
-  }
+  // async deleteUser(id: string) {
+  //   try {
+  //     const deletedUser = await this.prisma.user.delete({
+  //       where: { id },
+  //     });
+  //     return successResponse(deletedUser, 'User deleted successfully!');
+  //   } catch (error) {
+  //     throw new NotFoundException('User not found');
+  //   }
+  // }
 }

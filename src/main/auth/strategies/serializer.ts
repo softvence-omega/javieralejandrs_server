@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 // google oauth serializer
 
 import { Injectable } from '@nestjs/common';

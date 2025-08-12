@@ -5,7 +5,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
 import bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
@@ -22,7 +22,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly mailService: MailService,
-  ) { }
+  ) {}
 
   private oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
