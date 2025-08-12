@@ -12,11 +12,13 @@ model User {
   provider         String?
   providerId       String?
   resetToken       String?
+  socialProfile    String?
   resetTokenExpiry DateTime?
   isPopular        Boolean?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
   planId           String?
+
   plan             Plan?     @relation("UserPlan", fields: [planId], references: [id])
   blogs            Blog[]
   Brand            Brand?
