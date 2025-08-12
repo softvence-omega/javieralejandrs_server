@@ -5,19 +5,19 @@ import Stripe from 'stripe';
 import { PrismaService } from '../prisma/prisma.service';
 import { successResponse } from '@project/common/utils/response.util';
 
-
 @Injectable()
 export class SubscriptionPlanService {
-  private stripe: Stripe
+  private stripe: Stripe;
 
   constructor(private readonly prisma: PrismaService) {
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
       // apiVersion: '2023-08-16'
-    })
+    });
   }
-  async createSubscription(dto: CreateSubscriptionPlanDto ) {
-
-     const isExist = await this.prisma.plan.findFirst({ where: { type: dto.type } });
+  async createSubscription(dto: CreateSubscriptionPlanDto) {
+    const isExist = await this.prisma.plan.findFirst({
+      where: { type: dto.type },
+    });
     if (isExist) {
       throw new BadRequestException('Plan already exist');
     }
@@ -48,8 +48,6 @@ export class SubscriptionPlanService {
 
     // console.log(stripePrice, 'stripePrice');
 
-  
-
     const plan = await this.prisma.plan.create({
       data: {
         type: dto.type,
@@ -58,7 +56,7 @@ export class SubscriptionPlanService {
         duration: dto.duration,
         features: dto.features,
         stripeProductId: stripeProduct.id,
-        stripePriceId: stripePrice.id
+        stripePriceId: stripePrice.id,
       },
     });
     return successResponse(plan, 'Plan created successfully!');
@@ -69,10 +67,12 @@ export class SubscriptionPlanService {
     return successResponse(plans, 'Plans fetched successfully!');
   }
 
-
   async updatePlan(id: string, dto: UpdateSubscriptionPlanDto) {
     console.log(dto, 'dto');
-    const plan = await this.prisma.plan.update({ where: { id }, data: { ...dto } });
+    const plan = await this.prisma.plan.update({
+      where: { id },
+      data: { ...dto },
+    });
     console.log(plan, 'plan');
     return successResponse(plan, 'Plan updated successfully!');
   }

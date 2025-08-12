@@ -1,9 +1,8 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsOptional, IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional, IsString } from 'class-validator';
 
 export class EditProfileDto {
-
-   @ApiProperty({
+  @ApiProperty({
     type: 'string',
     format: 'binary',
     description: 'Profile image file (JPEG, PNG, etc.)',

@@ -1,40 +1,33 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { ENVEnum } from '@project/common/enum/env.enum';
-import { PrismaService } from '@project/lib/prisma/prisma.service';
-import { UtilsService } from '@project/lib/utils/utils.service';
-import chalk from 'chalk';
+// import { ConfigService } from '@nestjs/config';
+//  // import { ENVEnum } from '@project/common/enum/env.enum';
+// import { PrismaService } from '@project/lib/prisma/prisma.service';
+// import { UtilsService } from '@project/lib/utils/utils.service';
 
 @Injectable()
 export class AdminService implements OnModuleInit {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly utils: UtilsService,
-    private readonly configService: ConfigService,
-  ) {}
+  constructor() {} // private readonly configService: ConfigService, // private readonly utils: UtilsService, // private readonly prisma: PrismaService,
 
   onModuleInit(): Promise<void> {
     return this.seedAdminUser();
   }
 
   async seedAdminUser(): Promise<void> {
-    const adminEmail = this.configService.getOrThrow<string>(
-      ENVEnum.ADMIN_EMAIL,
-    );
-    const adminPass = this.configService.getOrThrow<string>(ENVEnum.ADMIN_PASS);
-    const adminPhone = this.configService.getOrThrow<string>(
-      ENVEnum.ADMIN_PHONE,
-    );
-    const adminEmployeeID = this.configService.getOrThrow<string>(
-      ENVEnum.ADMIN_EMPLOYEE_ID,
-    );
-
+    // const adminEmail = this.configService.getOrThrow<string>(
+    //   ENVEnum.ADMIN_EMAIL,
+    // );
+    // const adminPass = this.configService.getOrThrow<string>(ENVEnum.ADMIN_PASS);
+    // const adminPhone = this.configService.getOrThrow<string>(
+    //   ENVEnum.ADMIN_PHONE,
+    // );
+    // const adminEmployeeID = this.configService.getOrThrow<string>(
+    //   ENVEnum.ADMIN_EMPLOYEE_ID,
+    // );
     // const adminExists = await this.prisma.user.findFirst({
     //   where: {
     //     email: adminEmail,
     //   },
     // });
-
     // * create admin
     // if (!adminExists) {
     // const user = await this.prisma.user.create({
@@ -56,7 +49,6 @@ export class AdminService implements OnModuleInit {
     // );
     // return;
     // }
-
     // * update login
     // const admin = await this.prisma.user.update({
     //   where: {

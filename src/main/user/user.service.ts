@@ -1,17 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { EditProfileDto } from './dto/edit-profile.dto';
 import { successResponse } from '@project/common/utils/response.util';
-import { HandleError } from '@project/common/error/handle-error.decorator';
-import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UtilsService } from '@project/lib/utils/utils.service';
 import bcrypt from 'bcrypt';
+import { PrismaService } from '../prisma/prisma.service';
+import { EditProfileDto } from './dto/edit-profile.dto';
 import { SocialProfileDto } from './dto/social-profile.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService, private readonly utils: UtilsService) { }
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly utils: UtilsService,
+  ) {}
 
   async getAllUsers() {
     const users = await this.prisma.user.findMany({
@@ -85,7 +87,7 @@ export class UserService {
 
   async editUserProfile(userId: string, dto: EditProfileDto) {
     try {
-      const { images,name,location,bio } = dto;
+      const { images, name, location, bio } = dto;
       const user = await this.prisma.user.findUnique({
         where: { id: userId },
       });
@@ -97,14 +99,13 @@ export class UserService {
       return await this.prisma.user.update({
         where: { id: userId },
         data: {
-          name:name?.trim()?name.trim():user.name,
-          location:location?.trim()?location.trim():user.location,
-          bio:bio?.trim()?bio.trim():user.bio,
-          images:images?.trim()?images.trim():user.images
+          name: name?.trim() ? name.trim() : user.name,
+          location: location?.trim() ? location.trim() : user.location,
+          bio: bio?.trim() ? bio.trim() : user.bio,
+          images: images?.trim() ? images.trim() : user.images,
         },
       });
-    }
-    catch (error) {
+    } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
       }
@@ -122,11 +123,11 @@ export class UserService {
       if (!user) {
         throw new NotFoundException('User not found');
       }
-      
-       const isMatch = await bcrypt.compare(oldPassword, user.password);
-    if (!isMatch) {
-      throw new NotFoundException('Old password is incorrect');
-    }
+
+      const isMatch = await bcrypt.compare(oldPassword, user.password);
+      if (!isMatch) {
+        throw new NotFoundException('Old password is incorrect');
+      }
 
       const hashedPassword = await this.utils.hash(newPassword);
       return await this.prisma.user.update({
@@ -135,8 +136,7 @@ export class UserService {
           password: hashedPassword,
         },
       });
-    }
-    catch (error) {
+    } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
       }
@@ -144,9 +144,9 @@ export class UserService {
     }
   }
 
-  async socialProfile (userId: string, dto: SocialProfileDto) {
+  async socialProfile(userId: string, dto: SocialProfileDto) {
     const { whatsapp } = dto;
-    const result=  await this.prisma.user.update({
+    const result = await this.prisma.user.update({
       where: { id: userId },
       data: {
         socialProfile: whatsapp,
@@ -154,7 +154,6 @@ export class UserService {
     });
     return successResponse(result, 'Social profile updated successfully!');
   }
-
 
   // async deleteUser(id: string) {
   //   try {
@@ -166,5 +165,4 @@ export class UserService {
   //     throw new NotFoundException('User not found');
   //   }
   // }
-  
 }

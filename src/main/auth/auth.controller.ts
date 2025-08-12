@@ -1,33 +1,15 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Query,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
-import { Request, Response } from 'express';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { GoogleAuthGuard } from './guard/googl-oauth.guard';
-import { PrismaService } from '../prisma/prisma.service';
-import admin from '@project/lib/firebase/firebase-admin';
-// import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { FirebaseLoginDto } from './dto/firebase.dto';
 import { ForgotPasswordDto } from './dto/forget-password.dto';
 import { GoogleLoginDto } from './dto/google.login.dto';
 
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly prisma: PrismaService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('create-user')
   async createUser(@Body() dto: CreateUserDto) {
@@ -47,9 +29,7 @@ export class AuthController {
 
   @Post('google/code')
   async handleGoogleCode(@Body() code: GoogleLoginDto) {
-    const { tokens, profile } = await this.authService.exchangeCodeForTokens(
-      code.code,
-    );
+    const { profile } = await this.authService.exchangeCodeForTokens(code.code);
 
     const user = {
       userName: `@${profile.name?.toLowerCase()}`,
