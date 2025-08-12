@@ -1,14 +1,23 @@
 model Plan {
   id          String   @id @default(uuid())
-  name        String
+  // name        String
+  type        PlanType
   description String?
   price       Float
-  duration    Int      // Duration in days
-  features    String[] // Array of features
+  duration    Int
+  features    String[]
   isActive    Boolean  @default(true)
+  stripeProductId String?
+  stripePriceId String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  User        User[]   @relation("UserPlan")
+  payments    Payment[]
+  
+}
 
-
-  User          User[] @relation( name: "UserPlan" )
+enum PlanType {
+  STARTER
+  GROWTH
+  ENTERPRISE
 }

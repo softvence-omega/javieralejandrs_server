@@ -3,6 +3,7 @@ import { successResponse } from '@project/common/utils/response.util';
 import { PrismaService } from '@project/lib/prisma/prisma.service';
 import { CreateEventDto } from '../dto/create-event.dto';
 import { FilterEventDto } from '../dto/filter-event.dto';
+import { FilterByCategoryEventDto } from '../dto/filterBycategory-event.dto';
 import { UpdateEventDto } from '../dto/update-event.dto';
 
 @Injectable()
@@ -92,6 +93,41 @@ export class CreateEventService {
       //   },
     });
     return successResponse(events, 'Events fetched successfully!');
+  }
+
+  async findAllEventsByIndividualHost(
+    query: FilterByCategoryEventDto,
+    hostId: string,
+  ) {
+    const { eventType, page, limit } = query;
+
+    const take = parseInt(limit ?? '9') || 9;
+    const skip = (parseInt(page ?? '1') - 1) * take;
+    const host = await this.prisma.user.findUnique({
+      where: { id: hostId },
+      //  include: { event: { where: { eventType: query.eventType } }  }
+    });
+    if (!host) {
+      throw new NotFoundException('Host does not exist');
+    }
+    const event = await this.prisma.event.findMany({
+      where: {
+        eventType: eventType,
+      },
+      include: {
+        host: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      skip,
+      take,
+    });
+    console.log(event, 'event');
+    return successResponse(
+      event,
+      'All Events by individual host fetched successfully!',
+    );
   }
 
   async findEventById(id: string) {
