@@ -1,23 +1,20 @@
-import { MailService } from './../../lib/mail/mail.service';
 import { JwtService } from '@nestjs/jwt';
+import { MailService } from './../../lib/mail/mail.service';
 
 import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
-  NotFoundException,
-  UnauthorizedException,
+  NotFoundException
 } from '@nestjs/common';
-import { UpdateAuthDto } from './dto/update-auth.dto';
-import { CreateUserDto } from './dto/create-user.dto';
-import { PrismaService } from '../prisma/prisma.service';
 import bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
+import { Credentials } from 'google-auth-library';
+import { google, oauth2_v2 } from 'googleapis';
+import { PrismaService } from '../prisma/prisma.service';
+import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { GoogleLoginDetails } from './entities/googleLoginDetails';
-import admin from '@project/lib/firebase/firebase-admin';
-import { google, oauth2_v2 } from 'googleapis';
-import { Credentials } from 'google-auth-library';
 
 @Injectable()
 export class AuthService {
@@ -25,7 +22,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly mailService: MailService,
-  ) {}
+  ) { }
 
   private oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,

@@ -1,15 +1,15 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { ENVEnum } from '@project/common/enum/env.enum';
-import { PrismaService } from '@project/lib/prisma/prisma.service';
-import { UtilsService } from '@project/lib/utils/utils.service';
+// import { ConfigService } from '@nestjs/config';
+// import { ENVEnum } from '@project/common/enum/env.enum';
+// import { PrismaService } from '@project/lib/prisma/prisma.service';
+// import { UtilsService } from '@project/lib/utils/utils.service';
 
 @Injectable()
 export class AdminService implements OnModuleInit {
   constructor(
-    private readonly prisma: PrismaService,
-    private readonly utils: UtilsService,
-    private readonly configService: ConfigService,
+    // private readonly prisma: PrismaService,
+    // private readonly utils: UtilsService,
+    // private readonly configService: ConfigService,
   ) {}
 
   onModuleInit(): Promise<void> {
@@ -17,16 +17,16 @@ export class AdminService implements OnModuleInit {
   }
 
   async seedAdminUser(): Promise<void> {
-    const adminEmail = this.configService.getOrThrow<string>(
-      ENVEnum.ADMIN_EMAIL,
-    );
-    const adminPass = this.configService.getOrThrow<string>(ENVEnum.ADMIN_PASS);
-    const adminPhone = this.configService.getOrThrow<string>(
-      ENVEnum.ADMIN_PHONE,
-    );
-    const adminEmployeeID = this.configService.getOrThrow<string>(
-      ENVEnum.ADMIN_EMPLOYEE_ID,
-    );
+    // const adminEmail = this.configService.getOrThrow<string>(
+    //   ENVEnum.ADMIN_EMAIL,
+    // );
+    // const adminPass = this.configService.getOrThrow<string>(ENVEnum.ADMIN_PASS);
+    // const adminPhone = this.configService.getOrThrow<string>(
+    //   ENVEnum.ADMIN_PHONE,
+    // );
+    // const adminEmployeeID = this.configService.getOrThrow<string>(
+    //   ENVEnum.ADMIN_EMPLOYEE_ID,
+    // );
 
     // const adminExists = await this.prisma.user.findFirst({
     //   where: {

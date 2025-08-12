@@ -19,7 +19,6 @@ import { CreateBlogDto } from './dto/create-blog.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 
-
 interface AuthenticatedRequest extends Request {
   user: {
     id: string;
@@ -31,7 +30,7 @@ interface AuthenticatedRequest extends Request {
 @ApiTags('Blog')
 @Controller('blog')
 export class BlogController {
-  constructor(private readonly blogService: BlogService) { }
+  constructor(private readonly blogService: BlogService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new blog post' })
