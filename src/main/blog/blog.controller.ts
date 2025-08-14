@@ -39,8 +39,8 @@ export class BlogController {
     @Body() createBlogDto: CreateBlogDto,
     @GetUser('userId') userId: string,
   ) {
-    console.log(createBlogDto, 'createBlogDto');
-    console.log(userId, 'userId from decorator');
+    // console.log(createBlogDto, 'createBlogDto');
+    // console.log(userId, 'userId from decorator');
     return await this.blogService.createBlog(createBlogDto, userId);
   }
 
