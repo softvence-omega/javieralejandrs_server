@@ -1,20 +1,23 @@
 import { JwtService } from '@nestjs/jwt';
-import { MailService } from './../../lib/mail/mail.service';
+import { MailService } from '../../../lib/mail/mail.service';
 
 import {
   BadRequestException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { Credentials } from 'google-auth-library';
 import { google, oauth2_v2 } from 'googleapis';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { LoginDto } from './dto/login.dto';
-import { GoogleLoginDetails } from './entities/googleLoginDetails';
+import { PrismaService } from '../../prisma/prisma.service';
+import { CreateUserDto } from '../dto/create-user.dto';
+import {
+  ForgetPasswordDto,
+  ResetPasswordDto,
+} from '../dto/forget-password.dto';
+import { LoginDto } from '../dto/login.dto';
+import { GoogleLoginDetails } from '../entities/googleLoginDetails';
 
 @Injectable()
 export class AuthService {
@@ -87,44 +90,78 @@ export class AuthService {
     }
   }
 
-  async forgotPassword(email: string) {
-    try {
-      const user = await this.prisma.user.findUnique({ where: { email } });
-      if (!user) throw new NotFoundException('User not found');
+  //  Forgot Password
 
-      const token = crypto.randomBytes(32).toString('hex');
-      const hashedToken = crypto
-        .createHash('sha256')
-        .update(token)
-        .digest('hex');
-      const expiry = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
+  async forgotPassword(dto: ForgetPasswordDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
+    if (!user) throw new NotFoundException('User not found');
 
-      await this.prisma.user.update({
-        where: { email },
-        data: {
-          resetToken: hashedToken,
-          resetTokenExpiry: expiry,
-        },
-      });
+    // Generate raw token
+    const token = crypto.randomBytes(32).toString('hex');
 
-      const resetLink = `https://your-frontend.com/reset-password/${token}`;
+    // Hash token for DB
+    // const hashedToken = crypto
+    //   .createHash('sha256')
+    //   .update(token)
+    //   .digest('hex');
 
-      await this.mailService.sendEmail(
-        user.email,
-        'Reset Your Password',
-        `
-          <h2>Password Reset Request</h2>
-          <p>Hello ${user.name ?? 'user'},</p>
-          <p>Click the link below to reset your password. This link will expire in 1 hour.</p>
-          <a href="${resetLink}">${resetLink}</a>
-        `,
-      );
+    const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
-      return { message: 'Password reset link sent to your email' };
-    } catch (error) {
-      console.error('Forgot password error:', error);
-      throw new InternalServerErrorException('Something went wrong');
-    }
+    await this.prisma.user.update({
+      where: { email: dto.email },
+      data: {
+        // resetToken: hashedToken,
+        resetToken: token,
+        resetTokenExpiry: expiry,
+      },
+    });
+
+    const resetLink = `http://localhost:3000/reset-password?token=${token}`;
+
+    await this.mailService.sendEmail(
+      user.email,
+      'Reset Your Password',
+      `
+      <h2>Password Reset Request</h2>
+      <p>Hello ${user.name ?? 'user'},</p>
+      <p>Click the link below to reset your password. This link will expire in 1 hour.</p>
+      <a href="${resetLink}">${resetLink}</a>
+    `,
+    );
+
+    return { message: 'Password reset link sent to your email' };
+  }
+
+  async resetPassword(dto: ResetPasswordDto) {
+    // Token hashing ()
+    // const hashedToken = crypto
+    //   .createHash('sha256')
+    //   .update(dto.token)
+    //   .digest('hex');
+
+    const user = await this.prisma.user.findFirst({
+      where: {
+        resetToken: dto.token,
+        resetTokenExpiry: { gt: new Date() },
+      },
+    });
+
+    if (!user) throw new BadRequestException('Invalid or expired token');
+
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        resetToken: null,
+        resetTokenExpiry: null,
+      },
+    });
+
+    return { message: 'Password reset successful' };
   }
 
   async validateUser(details: GoogleLoginDetails) {
