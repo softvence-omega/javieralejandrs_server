@@ -183,7 +183,7 @@ export class AuthService {
         role: 'USER',
       },
     });
-    console.log(newUser);
+    // console.log(newUser);
     return newUser;
   }
 

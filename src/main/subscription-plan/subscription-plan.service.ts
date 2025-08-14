@@ -68,12 +68,12 @@ export class SubscriptionPlanService {
   }
 
   async updatePlan(id: string, dto: UpdateSubscriptionPlanDto) {
-    console.log(dto, 'dto');
+    // console.log(dto, 'dto');
     const plan = await this.prisma.plan.update({
       where: { id },
       data: { ...dto },
     });
-    console.log(plan, 'plan');
+    // console.log(plan, 'plan');
     return successResponse(plan, 'Plan updated successfully!');
   }
 
