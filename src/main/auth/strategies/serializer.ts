@@ -2,7 +2,7 @@
 // google oauth serializer
 
 import { Injectable } from '@nestjs/common';
-import { AuthService } from '../auth.service';
+import { AuthService } from '../services/auth.service';
 
 @Injectable()
 export class Serializer {
