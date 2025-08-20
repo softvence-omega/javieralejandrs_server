@@ -275,48 +275,4 @@ export class AuthService {
       throw error;
     }
   }
-
-  // async loginWithFirebase(idToken: string) {
-  //   let decoded;
-  //   try {
-  //     decoded = await admin.auth().verifyIdToken(idToken);
-  //   } catch (error) {
-  //     throw new UnauthorizedException('Invalid Firebase ID token');
-  //   }
-
-  //   const { email, name, picture } = decoded;
-
-  //   if (!email) {
-  //     throw new UnauthorizedException('Firebase token has no email');
-  //   }
-
-  //   let user = await this.prisma.user.findUnique({ where: { email } });
-
-  //   if (!user) {
-  //     user = await this.prisma.user.create({
-  //       data: {
-  //         email,
-  //         userName: name?.split(' ').join('_') || undefined,
-  //         name: name || undefined,
-  //         images: picture || undefined,
-  //         password: '', // No password required for Firebase users
-  //         role: 'USER',
-  //       },
-  //     });
-  //   }
-
-  //   const payload = {
-  //     sub: user.id,
-  //     email: user.email,
-  //     role: user.role,
-  //   };
-
-  //   const accessToken = this.jwtService.sign(payload);
-
-  //   return {
-  //     message: 'Login successful',
-  //     accessToken,
-  //     user,
-  //   };
-  // }
 }

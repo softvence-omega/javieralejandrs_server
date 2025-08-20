@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "public"."EventType" AS ENUM ('Birthday', 'Wedding', 'Party', 'Get_together');
+CREATE TYPE "public"."EventType" AS ENUM ('Birthday', 'Wedding', 'Party', 'Get_together', 'DJ_Party', 'Catering', 'Bounce_House', 'Photography');
 
 -- CreateEnum
 CREATE TYPE "public"."FileType" AS ENUM ('image', 'docs', 'link');
@@ -102,6 +102,16 @@ CREATE TABLE "public"."event" (
 );
 
 -- CreateTable
+CREATE TABLE "public"."Newslatter" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Newslatter_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "public"."Plan" (
     "id" TEXT NOT NULL,
     "type" "public"."PlanType" NOT NULL,
@@ -148,6 +158,7 @@ CREATE TABLE "public"."User" (
     "provider" TEXT,
     "providerId" TEXT,
     "resetToken" TEXT,
+    "socialProfile" TEXT,
     "resetTokenExpiry" TIMESTAMP(3),
     "isPopular" BOOLEAN,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -163,6 +174,9 @@ CREATE UNIQUE INDEX "Brand_userId_key" ON "public"."Brand"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "event_id_key" ON "public"."event"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Newslatter_email_key" ON "public"."Newslatter"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Payment_id_key" ON "public"."Payment"("id");
