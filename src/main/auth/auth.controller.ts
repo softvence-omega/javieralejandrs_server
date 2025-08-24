@@ -66,18 +66,30 @@ export class AuthController {
     return this.verifyOtpService.verifyOtp(dto.email, dto.otp);
   }
 
-  @Post('google/code')
-  async handleGoogleCode(@Body() code: GoogleLoginDto) {
-    const { profile } = await this.authService.exchangeCodeForTokens(code.code);
-
-    const user = {
-      userName: `@${profile.name?.toLowerCase()}`,
-      email: profile.email,
-      name: profile.name?.split(' ').join(''),
-      images: profile.picture,
-      role: 'USER',
-      password: '',
-    };
-    return await this.authService.googleLogin(user);
+  @Post('gooogle-login')
+  async googleLogin(@Body() dto: GoogleLoginDto) {
+    return await this.authService.googleLogin(dto);
   }
+
+  //   @Post('google/code')
+  //   async handleGoogleCode(@Body() code: GoogleLoginDto) {
+  //     const result = await this.authService.exchangeCodeForTokens(code.code);
+  // const profile = result?.profile;
+
+  // if (!profile) {
+  //   // handle the case where profile is undefined
+  //   throw new Error('Failed to retrieve profile');
+  // }
+
+  // const user = {
+  //   userName: `@${profile.name?.toLowerCase()}`,
+  //   email: profile.email,
+  //   name: profile.name?.split(' ').join(''),
+  //   images: profile.picture,
+  //   role: 'USER',
+  //   password: '',
+  // };
+
+  //     return await this.authService.googleLogin(user);
+  //   }
 }

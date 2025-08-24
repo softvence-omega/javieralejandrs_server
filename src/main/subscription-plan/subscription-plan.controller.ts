@@ -29,6 +29,7 @@ export class SubscriptionPlanController {
     return await this.subscriptionPlanService.getAllPlans();
   }
 
+  @ValidateAdmin()
   @Patch(':id')
   async update(
     @Param('id') id: string,
@@ -37,6 +38,7 @@ export class SubscriptionPlanController {
     return await this.subscriptionPlanService.updatePlan(id, dto);
   }
 
+  @ValidateAdmin()
   @Delete(':id')
   async removePlan(@Param('id') id: string) {
     return await this.subscriptionPlanService.removePlan(id);
