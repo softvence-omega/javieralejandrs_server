@@ -9,9 +9,12 @@ import { ENVEnum } from './common/enum/env.enum';
 import { AllExceptionsFilter } from './common/filter/http-exception.filter';
 import session from 'express-session';
 import passport from 'passport';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    rawBody: true,
+  });
   const configService = app.get(ConfigService);
 
   app.enableCors({
@@ -79,8 +82,10 @@ async function bootstrap() {
   // const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('ts/docs', app, documentFactory);
 
+  app.use('/stripe/webhook', bodyParser.raw({ type: 'application/json' }));
   app.use(cookieParser.default());
-  const port = parseInt(configService.get<string>(ENVEnum.PORT) ?? '5000', 10);
+
+  const port = parseInt(configService.get<string>(ENVEnum.PORT) ?? '5003', 10);
   await app.listen(port);
 }
 
