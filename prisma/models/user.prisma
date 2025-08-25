@@ -29,7 +29,8 @@ model User {
   comments         Comment[]
   likes            Like[]
   views            View[]
-  event            event[]
+  event            Event[]
+  booking          Booking[]
 }
 
 enum userRole {

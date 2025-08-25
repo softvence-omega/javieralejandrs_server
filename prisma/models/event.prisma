@@ -1,4 +1,4 @@
-model event {
+model Event {
   id               String    @id @unique @default(uuid())
   shortName        String
   shortDescription String
@@ -15,6 +15,8 @@ model event {
   hostId           String
   createdAt        DateTime  @default(now())
   updateAt         DateTime  @updatedAt
+
+  booking          Booking[]
 }
 
 enum EventType {

@@ -10,7 +10,6 @@ import bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 // import { Credentials } from 'google-auth-library';
 // import { google, oauth2_v2 } from 'googleapis';
-import { PrismaService } from '../../prisma/prisma.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import {
   ForgetPasswordDto,
@@ -22,6 +21,7 @@ import { JWTPayload } from '@project/common/jwt/jwt.interface';
 import { ConfigService } from '@nestjs/config';
 import { GoogleLoginDto } from '../dto/google.login.dto';
 import { OAuth2Client } from 'google-auth-library';
+import { PrismaService } from '@project/lib/prisma/prisma.service';
 
 @Injectable()
 export class AuthService {

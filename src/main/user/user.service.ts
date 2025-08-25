@@ -2,11 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { successResponse } from '@project/common/utils/response.util';
 import { UtilsService } from '@project/lib/utils/utils.service';
 import bcrypt from 'bcrypt';
-import { PrismaService } from '../prisma/prisma.service';
+
 import { EditProfileDto } from './dto/edit-profile.dto';
 import { SocialProfileDto } from './dto/social-profile.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { PrismaService } from '@project/lib/prisma/prisma.service';
 
 @Injectable()
 export class UserService {

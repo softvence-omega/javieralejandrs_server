@@ -1,0 +1,9 @@
+model Location {
+  id        Int      @id @default(autoincrement())
+  name      String
+  address   String
+  latitude  Float
+  longitude Float
+  createdAt DateTime @default(now())
+}
+

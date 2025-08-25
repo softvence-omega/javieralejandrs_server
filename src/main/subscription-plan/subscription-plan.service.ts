@@ -2,8 +2,8 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateSubscriptionPlanDto } from './dto/create-subscription-plan.dto';
 import { UpdateSubscriptionPlanDto } from './dto/update-subscription-plan.dto';
 import Stripe from 'stripe';
-import { PrismaService } from '../prisma/prisma.service';
 import { successResponse } from '@project/common/utils/response.util';
+import { PrismaService } from '@project/lib/prisma/prisma.service';
 
 @Injectable()
 export class SubscriptionPlanService {

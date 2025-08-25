@@ -1,0 +1,18 @@
+
+model Booking {
+  id          String   @id @default(uuid())
+  paymentIntentId   String?   // Stripe Payment Intent ID
+  status      BookingStatus @default(PENDING)
+  bookedAt    DateTime @default(now())
+
+  eventId     String
+  event       Event    @relation(fields: [eventId], references: [id])
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELED
+}
