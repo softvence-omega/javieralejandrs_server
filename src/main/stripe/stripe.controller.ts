@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Headers,
   HttpStatus,
   Post,
@@ -12,6 +13,8 @@ import { StripeService } from './stripe.service';
 import { Request, Response } from 'express';
 import Stripe from 'stripe';
 import { PrismaService } from '@project/lib/prisma/prisma.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { GetUser, ValidateHostORAuthor } from '@project/common/jwt/jwt.decorator';
 
 @Controller('stripe')
 export class StripeController {
@@ -22,9 +25,11 @@ export class StripeController {
     private readonly prisma: PrismaService,
   ) {}
 
+  @ApiBearerAuth()
+  @ValidateHostORAuthor()
   @Post('checkout')
-  async createCheckoutSession(@Body() dto: CreateStripeDto) {
-    return await this.stripeService.createCheckoutSession(dto);
+  async createCheckoutSession(@Body() dto: CreateStripeDto, @GetUser('hostId') hostId: string) {
+    return await this.stripeService.createCheckoutSession(dto, hostId);
   }
 
   @Post('webhook')
