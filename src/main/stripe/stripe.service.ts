@@ -1,8 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import Stripe from 'stripe';
-import { PrismaService } from '../prisma/prisma.service';
+
 import { CreateStripeDto } from './dto/create-stripe.dto';
 import { PlanType } from '@prisma/client';
+import { PrismaService } from '@project/lib/prisma/prisma.service';
 
 @Injectable()
 export class StripeService {

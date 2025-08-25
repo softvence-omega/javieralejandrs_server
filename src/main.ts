@@ -83,6 +83,7 @@ async function bootstrap() {
   SwaggerModule.setup('ts/docs', app, documentFactory);
 
   app.use('/stripe/webhook', bodyParser.raw({ type: 'application/json' }));
+  app.use('/booking/webhook', bodyParser.raw({ type: 'application/json' }));
   app.use(cookieParser.default());
 
   const port = parseInt(configService.get<string>(ENVEnum.PORT) ?? '5003', 10);

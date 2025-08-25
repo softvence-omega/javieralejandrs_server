@@ -11,7 +11,7 @@ import { CreateStripeDto } from './dto/create-stripe.dto';
 import { StripeService } from './stripe.service';
 import { Request, Response } from 'express';
 import Stripe from 'stripe';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '@project/lib/prisma/prisma.service';
 
 @Controller('stripe')
 export class StripeController {
