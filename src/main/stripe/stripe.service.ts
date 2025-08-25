@@ -15,7 +15,7 @@ export class StripeService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async createCheckoutSession(dto: CreateStripeDto) {
+  async createCheckoutSession(dto: CreateStripeDto, hostId: string) {
     const plan = await this.prisma.plan.findFirst({
       where: { type: dto.type },
     });
@@ -39,6 +39,7 @@ export class StripeService {
       cancel_url: `${baseUrl}/checkout/cancel`,
       metadata: {
         type: dto.type,
+        hostId,
       },
     });
 
